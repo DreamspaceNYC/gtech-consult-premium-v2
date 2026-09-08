@@ -120,4 +120,16 @@ describe("canonical business routing", () => {
     expect(contact).toContain("Monday–Saturday, 9:00 AM–6:00 PM");
     expect(contact).toContain(BUSINESS.mapsUrl);
   });
+
+  it("positions the homepage for Ondo solar searches and links every service", () => {
+    const html = renderToStaticMarkup(createElement(App, { ssrPath: "/" }));
+
+    expect(html).toContain("Solar Installation Company in Ondo City");
+    expect(html.match(/<h1(?:\s|>)/g)).toHaveLength(1);
+    for (const path of INDEXABLE_PATHS.filter(path => path !== "/")) {
+      expect(html).toContain(`href="${path}"`);
+    }
+    expect(html).toContain(BUSINESS.fullAddress);
+    expect(html).toContain("Monday–Saturday, 9:00 AM–6:00 PM");
+  });
 });

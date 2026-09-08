@@ -1,13 +1,10 @@
 import { useMemo, useState } from "react";
 import {
   ArrowLeft,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Heart,
-  Menu,
   MessageCircle,
-  Search,
   ShoppingCart,
   SlidersHorizontal,
   Star,
@@ -17,12 +14,12 @@ import {
   SOLAR_PACKAGES as packages,
   type SolarPackage as Package,
 } from "@/content/packages";
+import { SERVICE_PAGES } from "@/content/services";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { SeoHead } from "@/seo/SeoHead";
 
 const WHATSAPP = "https://wa.me/2348167498489";
-const PHONE_PRIMARY = "tel:+2348167498489";
-const PHONE_SECONDARY = "tel:+2349157000010";
-const MAPS = "https://maps.app.goo.gl/FK4QEWGyVbmGxz3K6";
-
 const categories = ["All", "Solar Installation", "CCTV", "Smart Homes"];
 const formatNaira = (amount: number) => `₦${amount.toLocaleString("en-NG")}`;
 
@@ -188,7 +185,6 @@ export default function Home() {
   const [selected, setSelected] = useState<Package | null>(null);
   const [cart, setCart] = useState<Package[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
   const filtered = useMemo(
     () =>
@@ -206,20 +202,8 @@ export default function Home() {
   if (selected)
     return (
       <>
-        <header className="store-header">
-          <div className="container store-top">
-            <a href="#top" onClick={onBackTop} className="store-logo">
-              <img
-                className="brand-logo-image"
-                src="/images/gtech-logo-reference-cropped_daba8f24.png"
-                alt="G-Tech Consult"
-              />
-            </a>
-            <a href={WHATSAPP} className="header-whatsapp">
-              <MessageCircle size={15} /> WhatsApp
-            </a>
-          </div>
-        </header>
+        <SeoHead path="/" />
+        <SiteHeader />
         <DetailPage
           item={selected}
           onBack={() => setSelected(null)}
@@ -227,12 +211,9 @@ export default function Home() {
         />
       </>
     );
-  function onBackTop(event: React.MouseEvent) {
-    event.preventDefault();
-    setSelected(null);
-  }
   return (
     <div className="storefront">
+      <SeoHead path="/" />
       <div className="promo-bar">
         <div className="promo-track">
           <span>
@@ -249,70 +230,17 @@ export default function Home() {
           </span>
         </div>
       </div>
-      <header className="store-header">
-        <div className="container store-top">
-          <button
-            className="mobile-menu-trigger"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X size={21} /> : <Menu size={21} />}
-          </button>
-          <a href="#top" className="store-logo">
-            <img
-              className="brand-logo-image"
-              src="/images/gtech-logo-reference-cropped_daba8f24.png"
-              alt="G-Tech Consult"
-            />
-          </a>
-          <nav className={`store-nav ${menuOpen ? "open" : ""}`}>
-            {categories.map(category => (
-              <button
-                key={category}
-                className={activeCategory === category ? "active" : ""}
-                onClick={() => {
-                  setActiveCategory(category);
-                  setMenuOpen(false);
-                }}
-              >
-                {category}
-              </button>
-            ))}
-            <a href="#contact">
-              More <ChevronDown size={13} />
-            </a>
-          </nav>
-          <div className="store-actions">
-            <button aria-label="Search">
-              <Search size={19} />
-            </button>
-            <button
-              aria-label="Cart"
-              className="cart-button"
-              onClick={() => setCartOpen(true)}
-            >
-              <ShoppingCart size={19} />
-              <span>{cart.length}</span>
-            </button>
-            <a href={WHATSAPP} className="header-whatsapp">
-              <MessageCircle size={15} /> WhatsApp
-            </a>
-          </div>
-        </div>
-      </header>
-      <main id="top">
-        <section className="store-hero">
+      <SiteHeader />
+      <main id="main-content">
+        <section id="top" className="store-hero">
           <div className="container store-hero-inner">
             <div className="hero-copy-store">
               <p className="store-kicker">G-Tech Consult · Ondo City</p>
-              <h1>
-                Powering secure
-                <br />
-                <span>smart living.</span>
-              </h1>
+              <h1>Solar Installation Company in Ondo City.</h1>
               <p>
-                Solar systems, CCTV security and smart-home solutions designed
-                for the way you live and work.
+                G-Tech Consult assesses and installs solar power, inverter and
+                lithium battery, CCTV security and smart-home solutions for
+                homes and businesses in Ondo.
               </p>
               <div className="store-hero-actions">
                 <a href="#shop" className="store-button green">
@@ -360,6 +288,23 @@ export default function Home() {
                 <ChevronRight size={15} />
               </button>
             ))}
+          </div>
+        </section>
+        <section className="home-services">
+          <div className="container">
+            <div className="section-heading">
+              <p className="page-eyebrow">Local technical services</p>
+              <h2>Power, security and automation built around your needs</h2>
+            </div>
+            <div className="service-link-grid">
+              {SERVICE_PAGES.map(service => (
+                <a href={service.path} key={service.path}>
+                  <h3>{service.h1}</h3>
+                  <p>{service.description}</p>
+                  <span>Explore service →</span>
+                </a>
+              ))}
+            </div>
           </div>
         </section>
         <section id="shop" className="shop-section">
@@ -463,51 +408,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="store-footer">
-        <div className="container footer-grid">
-          <div>
-            <a href="#top" className="store-logo footer-logo">
-              <img
-                className="brand-logo-image"
-                src="/images/gtech-logo-reference-cropped_daba8f24.png"
-                alt="G-Tech Consult"
-              />
-            </a>
-            <p>
-              Solar · CCTV · Smart Homes
-              <br />
-              Powering secure and smart living.
-            </p>
-          </div>
-          <div>
-            <strong>Quick links</strong>
-            <a href="#shop">Shop</a>
-            <a href="#contact">Contact us</a>
-            <a href={MAPS}>Find us in Ondo</a>
-          </div>
-          <div>
-            <strong>Contact</strong>
-            <a href={PHONE_PRIMARY}>+234 816 749 8489</a>
-            <a href={PHONE_SECONDARY}>0915 700 0010</a>
-            <a href={WHATSAPP}>Chat on WhatsApp</a>
-            <a href={MAPS}>Adesuper Junction, Ondo City</a>
-          </div>
-          <div>
-            <strong>Opening hours</strong>
-            <span>Mon – Sat</span>
-            <span>8:00 AM – 7:00 PM</span>
-            <a href={WHATSAPP} className="footer-chat">
-              <MessageCircle size={15} /> Typically replies quickly
-            </a>
-          </div>
-        </div>
-        <div className="container footer-bottom">
-          <span>
-            © {new Date().getFullYear()} G-Tech Consult. All rights reserved.
-          </span>
-          <span>NGN ₦ · Terms · Privacy</span>
-        </div>
-      </footer>
+      <SiteFooter />
       {toast && (
         <div className="cart-toast">
           <ShoppingCart size={16} /> {toast}

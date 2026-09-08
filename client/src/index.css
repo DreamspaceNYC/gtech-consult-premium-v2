@@ -1892,6 +1892,10 @@ a {
 .contact-guidance {
   padding: 28px;
 }
+.home-services {
+  padding: 72px 0;
+  background: var(--soft);
+}
 
 @media (max-width: 720px) {
   .package-list-card,
