@@ -1,43 +1,483 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Heart, Menu, MessageCircle, Search, ShoppingCart, SlidersHorizontal, Star, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+  MessageCircle,
+  ShoppingCart,
+  SlidersHorizontal,
+  Star,
+  X,
+} from "lucide-react";
+import {
+  SOLAR_PACKAGES as packages,
+  type SolarPackage as Package,
+} from "@/content/packages";
+import { SERVICE_PAGES } from "@/content/services";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { SeoHead } from "@/seo/SeoHead";
 
 const WHATSAPP = "https://wa.me/2348167498489";
-const PHONE_PRIMARY = "tel:+2348167498489";
-const PHONE_SECONDARY = "tel:+2349157000010";
-const MAPS = "https://maps.app.goo.gl/FK4QEWGyVbmGxz3K6";
-
-type PackageItem = { name: string; spec: string; qty: string };
-type Package = { slug: string; title: string; shortTitle: string; category: string; price: number; oldPrice?: number; badge?: string; image: string; system: string; battery: string; panels: string; description: string; powers: string[]; notes?: string[]; items: PackageItem[]; inclusions: string[] };
-
-const packages: Package[] = [
-  { slug: "premium-comfort", title: "Premium Comfort Solar Package", shortTitle: "Premium Comfort", category: "Solar Installation", price: 14321800, badge: "PREMIUM COMFORT", image: "/images/gtech-premium-comfort-packshot_3201fbb7.png", system: "20kVA / 48V heavy-duty solar-inverter package", battery: "20kWh / 48V lithium battery", panels: "24 × 550W monocrystalline solar panels", description: "A high-capacity system for homes and businesses that want strong daytime performance and dependable overnight support for multiple air conditioners.", powers: ["3–4 air conditioners during the daytime", "2 air conditioners overnight until approximately 5:00 AM", "Lighting, TV, fans and other household appliances"], items: [{ name: "Pure sine-wave heavy-duty inverter", spec: "10KVA / 48V", qty: "2" }, { name: "Lithium-ion battery", spec: "20kWh / 48V", qty: "2" }, { name: "Monocrystalline solar panel", spec: "550W / 48V", qty: "24" }], inclusions: ["8 solar hangers", "60m DTL solar cable (16mm)", "AC/DC surge protective devices and breakers", "100m 10mm pure copper cable", "40m 4mm pure copper cable", "Adaptable box, cable trunk and 200A changeover switch", "Clips, lugs, sockets, tapes, logistics and transportation", "Installation service charge"] },
-  { slug: "moderate-ac-two", title: "Moderate AC Solar Package — Two AC", shortTitle: "Moderate AC · Two AC", category: "Solar Installation", price: 9804800, badge: "POPULAR", image: "/images/gtech-moderate-two-ac-packshot_5157bb61.png", system: "10kVA / 48V heavy-duty solar-inverter package", battery: "32kWh / 48V lithium battery", panels: "16 × 550W monocrystalline solar panels", description: "A balanced high-capacity system for customers who want to run up to two air conditioners alongside everyday home appliances.", powers: ["Up to 2 air conditioners day and night", "Lights, TV, fans and freezer", "Air-conditioning support typically until around 6:00 AM, depending on use"], items: [{ name: "Pure sine-wave heavy-duty inverter", spec: "10KVA / 48V", qty: "1" }, { name: "Lithium-ion battery", spec: "32kWh / 48V", qty: "1" }, { name: "Monocrystalline solar panel", spec: "550W / 48V", qty: "16" }], inclusions: ["5 solar hangers", "30m DTL solar cable (10mm)", "AC/DC surge protective devices and breakers", "50m 10mm pure copper cable", "20m 4mm pure copper cable", "Adaptable box, cable trunk and 200A changeover switch", "Clips, lugs, sockets, tapes, logistics and transportation", "Installation service charge"] },
-  { slug: "moderate-ac-one", title: "Moderate AC Solar Package — One AC", shortTitle: "Moderate AC · One AC", category: "Solar Installation", price: 6672800, badge: "ONE-AC SOLUTION", image: "/images/gtech-moderate-one-ac-packshot_5edb3f25.png", system: "10kVA / 48V heavy-duty solar-inverter package", battery: "16kWh / 48V lithium battery", panels: "12 × 550W monocrystalline solar panels", description: "A practical one-air-conditioner system for homes that want dependable power for essential appliances with controlled overnight AC use.", powers: ["1 air conditioner day and night", "Lights, TV, fans, freezer and essential loads", "Air conditioning typically until around 1:00–5:00 AM, depending on use"], items: [{ name: "Pure sine-wave heavy-duty inverter", spec: "10KVA / 48V", qty: "1" }, { name: "Lithium-ion battery", spec: "16kWh / 48V", qty: "1" }, { name: "Monocrystalline solar panel", spec: "550W / 48V", qty: "12" }], inclusions: ["5 solar hangers", "30m DTL solar cable (10mm)", "AC/DC surge protective devices and breakers", "50m 10mm pure copper cable", "20m 4mm pure copper cable", "Adaptable box, cable trunk and changeover switch", "Clips, lugs, sockets, tapes, logistics and transportation", "Installation service charge"] },
-  { slug: "essential-power", title: "Essential Power Solar Package", shortTitle: "Essential Power", category: "Solar Installation", price: 4694800, badge: "ESSENTIAL POWER", image: "/images/gtech-essential-power-packshot_c65bd6fe.png", system: "6KVA / 48V heavy-duty hybrid inverter", battery: "10kWh / 48V lithium battery", panels: "8 × 550W monocrystalline solar panels", description: "A dependable essential-load system for lights, television, freezer operation and pumping-machine use without air conditioning.", powers: ["Lights and TV", "Freezer overnight until daybreak", "Pumping machine", "No air conditioner"], items: [{ name: "Pure sine-wave heavy-duty hybrid inverter", spec: "6KVA / 48V", qty: "1" }, { name: "Lithium-ion battery", spec: "10kWh / 48V", qty: "1" }, { name: "Monocrystalline solar panel", spec: "550W", qty: "8" }], inclusions: ["Solar hangers", "20m DTL solar cable (6mm)", "AC/DC and DC/AC surge protection", "50m 10mm pure copper cable", "20m 4mm pure copper cable", "Adaptable box, cable trunk and 100A changeover switch", "Clips, lugs, sockets, tapes, screws, binding wire", "Installation charge and transportation"] },
-  { slug: "basic-managed", title: "Basic Load Solar Package — Managed Usage", shortTitle: "Basic Load · Managed", category: "Solar Installation", price: 2653800, badge: "BUDGET FRIENDLY", image: "/images/gtech-basic-managed-packshot_266fd39f.png", system: "4KVA / 24V heavy-duty hybrid inverter", battery: "5kWh lithium battery", panels: "4 × 550W monocrystalline solar panels", description: "A budget-conscious solar system for lights, television, freezer and pumping-machine use with managed daytime loading.", powers: ["Lights and TV", "Freezer and pumping machine", "Managed usage is required for overnight power"], notes: ["To preserve power overnight, the freezer and pumping machine should be switched off by approximately 4:00 PM. Lighting and smaller loads can continue through the night."], items: [{ name: "Pure sine-wave heavy-duty hybrid inverter", spec: "4KVA / 24V", qty: "1" }, { name: "Lithium-ion battery", spec: "5kWh", qty: "1" }, { name: "Monocrystalline solar panel", spec: "550W", qty: "4" }], inclusions: ["Solar hangers", "20m DTL solar cable (6mm)", "AC/DC and DC/AC surge protection", "30m 10mm pure copper cable", "20m 4mm pure copper cable", "Adaptable box, cable trunk and 100A changeover switch", "Clips, lugs, sockets, tapes, screws, washer, bolt, nut, binding wire", "Installation charge and transportation"] },
-  { slug: "singles-sos", title: "Singles SOS Solar Package", shortTitle: "Singles SOS", category: "Solar Installation", price: 1418000, badge: "STARTER PACKAGE", image: "/images/gtech-singles-sos-packshot_2bf84abd.png", system: "1.5KVA / 24V hybrid solar inverter", battery: "2.5kWh lithium battery", panels: "3 × 200W monocrystalline solar panels", description: "A compact starter package for singles, small apartments or customers who need lighting, television, tabletop-freezer and charging power on a controlled budget.", powers: ["Lights", "TV", "Tabletop freezer", "Charging sockets"], notes: ["This is a small-load system. Its intended use is limited to the loads listed above; it is not sized for an air conditioner or pumping machine."], items: [{ name: "Pure sine-wave high-voltage hybrid inverter", spec: "1.5KVA / 24V", qty: "1" }, { name: "Lithium-ion battery", spec: "2.5kWh", qty: "1" }, { name: "Monocrystalline solar panel", spec: "200W", qty: "3" }], inclusions: ["Solar hangers", "20m DTL solar cable (6mm)", "AC/DC and DC/AC surge protection", "30m 4mm pure copper cable", "Adaptable box, cable trunk and 100A changeover switch", "Clips, lugs, sockets, tapes, screws, washer, bolt, nut, binding wire", "Installation charge and transportation"] },
-  { slug: "power-tank", title: "I Pass My Neighbour Power Tank", shortTitle: "Power Tank", category: "Solar Installation", price: 661000, badge: "LOW-BUDGET POWER", image: "/images/gtech-power-tank-packshot_68d1cb2f.png", system: "500W / 1kW power tank", battery: "Integrated power-tank storage", panels: "1 × 500W monocrystalline solar panel", description: "A handy low-budget power system for lights, television and charging sockets.", powers: ["Lights", "TV", "Charging sockets"], items: [{ name: "Power tank", spec: "500W / 1kW", qty: "1" }, { name: "Monocrystalline solar panel", spec: "500W", qty: "1" }], inclusions: ["10m DTL solar cable (6mm)", "30m 4mm pure copper cable", "Adaptable box and 100A changeover switch", "Clips, lugs, sockets, tapes, screws, washer, bolt, nut, binding wire and trunk", "Installation charge and transportation"] },
-];
-
 const categories = ["All", "Solar Installation", "CCTV", "Smart Homes"];
 const formatNaira = (amount: number) => `₦${amount.toLocaleString("en-NG")}`;
 
-function ProductCard({ item, onAdd, onView }: { item: Package; onAdd: (item: Package) => void; onView: (item: Package) => void }) {
-  return <article className="product-card"><button className="product-image-wrap" onClick={() => onView(item)} aria-label={`View details for ${item.title}`}><img src={item.image} alt={item.title} className="product-image" />{item.badge && <span className="product-badge">{item.badge}</span>}<span className="wish-button"><Heart size={16} /></span></button><div className="product-body"><p className="product-category">{item.category}</p><h3>{item.title}</h3><div className="product-rating"><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><Star size={13} fill="currentColor" /><span>G-Tech package</span></div><div className="product-price"><strong>{formatNaira(item.price)}</strong></div><div className="product-card-actions"><button className="add-cart" onClick={() => onAdd(item)}>Add to Cart <ShoppingCart size={15} /></button><button className="details-button" onClick={() => onView(item)}>View details</button></div></div></article>;
+function ProductCard({
+  item,
+  onAdd,
+  onView,
+}: {
+  item: Package;
+  onAdd: (item: Package) => void;
+  onView: (item: Package) => void;
+}) {
+  return (
+    <article className="product-card">
+      <button
+        className="product-image-wrap"
+        onClick={() => onView(item)}
+        aria-label={`View details for ${item.title}`}
+      >
+        <img src={item.image} alt={item.title} className="product-image" />
+        {item.badge && <span className="product-badge">{item.badge}</span>}
+        <span className="wish-button">
+          <Heart size={16} />
+        </span>
+      </button>
+      <div className="product-body">
+        <p className="product-category">{item.category}</p>
+        <h3>{item.title}</h3>
+        <div className="product-rating">
+          <Star size={13} fill="currentColor" />
+          <Star size={13} fill="currentColor" />
+          <Star size={13} fill="currentColor" />
+          <Star size={13} fill="currentColor" />
+          <Star size={13} fill="currentColor" />
+          <span>G-Tech package</span>
+        </div>
+        <div className="product-price">
+          <strong>{formatNaira(item.price)}</strong>
+        </div>
+        <div className="product-card-actions">
+          <button className="add-cart" onClick={() => onAdd(item)}>
+            Add to Cart <ShoppingCart size={15} />
+          </button>
+          <button className="details-button" onClick={() => onView(item)}>
+            View details
+          </button>
+        </div>
+      </div>
+    </article>
+  );
 }
 
-function DetailPage({ item, onBack, onAdd }: { item: Package; onBack: () => void; onAdd: (item: Package) => void }) {
-  return <div className="detail-page"><div className="container"><button className="back-link" onClick={onBack}><ArrowLeft size={16} /> Back to packages</button><div className="detail-hero"><div className="detail-image"><img src={item.image} alt={item.title} /></div><div className="detail-intro"><p className="store-kicker">G-Tech Consult · Solar Installation</p><h1>{item.title}</h1><p className="detail-description">{item.description}</p><div className="detail-price">{formatNaira(item.price)}</div><p className="detail-price-note">Complete package price including listed installation items.</p><div className="detail-actions"><button className="store-button green" onClick={() => onAdd(item)}>Add to cart <ShoppingCart size={16} /></button><a className="store-button outline" href={`${WHATSAPP}?text=${encodeURIComponent(`Hello G-Tech Consult, I am interested in the ${item.title} at ${formatNaira(item.price)}. Please help me arrange a technical assessment.`)}`}><MessageCircle size={16} /> Request on WhatsApp</a></div></div></div><div className="detail-grid"><div><section className="detail-section"><p className="store-kicker">Designed for</p><h2>What it can power</h2><ul className="power-list">{item.powers.map((power) => <li key={power}>✓ <span>{power}</span></li>)}</ul>{item.notes?.map((note) => <div className="detail-note" key={note}><strong>Important usage note</strong><p>{note}</p></div>)}</section><section className="detail-section"><p className="store-kicker">Included system</p><h2>Equipment specification</h2><div className="spec-table">{item.items.map((entry) => <div className="spec-row" key={entry.name}><strong>{entry.name}</strong><span>{entry.spec}</span><b>{entry.qty}</b></div>)}</div></section></div><aside className="inclusions-card"><p className="store-kicker">Package inclusions</p><h2>Ready for installation</h2><ul>{item.inclusions.map((entry) => <li key={entry}>✓ {entry}</li>)}</ul><div className="assessment-box"><strong>Need help choosing?</strong><span>Final sizing is confirmed through a technical site assessment.</span><a href={`${WHATSAPP}?text=${encodeURIComponent(`Hello G-Tech Consult, I need help choosing a package for my property in Ondo.`)}`}>Chat with G-Tech <MessageCircle size={15} /></a></div></aside></div><div className="detail-disclaimer">System performance depends on actual appliance ratings, usage patterns, weather, battery condition and installation environment. G-Tech Consult will confirm the final recommendation during assessment.</div></div></div>;
+function DetailPage({
+  item,
+  onBack,
+  onAdd,
+}: {
+  item: Package;
+  onBack: () => void;
+  onAdd: (item: Package) => void;
+}) {
+  return (
+    <div className="detail-page">
+      <div className="container">
+        <button className="back-link" onClick={onBack}>
+          <ArrowLeft size={16} /> Back to packages
+        </button>
+        <div className="detail-hero">
+          <div className="detail-image">
+            <img src={item.image} alt={item.title} />
+          </div>
+          <div className="detail-intro">
+            <p className="store-kicker">G-Tech Consult · Solar Installation</p>
+            <h1>{item.title}</h1>
+            <p className="detail-description">{item.description}</p>
+            <div className="detail-price">{formatNaira(item.price)}</div>
+            <p className="detail-price-note">
+              Complete package price including listed installation items.
+            </p>
+            <div className="detail-actions">
+              <button
+                className="store-button green"
+                onClick={() => onAdd(item)}
+              >
+                Add to cart <ShoppingCart size={16} />
+              </button>
+              <a
+                className="store-button outline"
+                href={`${WHATSAPP}?text=${encodeURIComponent(`Hello G-Tech Consult, I am interested in the ${item.title} at ${formatNaira(item.price)}. Please help me arrange a technical assessment.`)}`}
+              >
+                <MessageCircle size={16} /> Request on WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+        <div className="detail-grid">
+          <div>
+            <section className="detail-section">
+              <p className="store-kicker">Designed for</p>
+              <h2>What it can power</h2>
+              <ul className="power-list">
+                {item.powers.map(power => (
+                  <li key={power}>
+                    ✓ <span>{power}</span>
+                  </li>
+                ))}
+              </ul>
+              {item.notes?.map(note => (
+                <div className="detail-note" key={note}>
+                  <strong>Important usage note</strong>
+                  <p>{note}</p>
+                </div>
+              ))}
+            </section>
+            <section className="detail-section">
+              <p className="store-kicker">Included system</p>
+              <h2>Equipment specification</h2>
+              <div className="spec-table">
+                {item.items.map(entry => (
+                  <div className="spec-row" key={entry.name}>
+                    <strong>{entry.name}</strong>
+                    <span>{entry.spec}</span>
+                    <b>{entry.qty}</b>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+          <aside className="inclusions-card">
+            <p className="store-kicker">Package inclusions</p>
+            <h2>Ready for installation</h2>
+            <ul>
+              {item.inclusions.map(entry => (
+                <li key={entry}>✓ {entry}</li>
+              ))}
+            </ul>
+            <div className="assessment-box">
+              <strong>Need help choosing?</strong>
+              <span>
+                Final sizing is confirmed through a technical site assessment.
+              </span>
+              <a
+                href={`${WHATSAPP}?text=${encodeURIComponent(`Hello G-Tech Consult, I need help choosing a package for my property in Ondo.`)}`}
+              >
+                Chat with G-Tech <MessageCircle size={15} />
+              </a>
+            </div>
+          </aside>
+        </div>
+        <div className="detail-disclaimer">
+          System performance depends on actual appliance ratings, usage
+          patterns, weather, battery condition and installation environment.
+          G-Tech Consult will confirm the final recommendation during
+          assessment.
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function Home() {
-  const [activeCategory, setActiveCategory] = useState("All"); const [selected, setSelected] = useState<Package | null>(null); const [cart, setCart] = useState<Package[]>([]); const [cartOpen, setCartOpen] = useState(false); const [menuOpen, setMenuOpen] = useState(false); const [toast, setToast] = useState("");
-  const filtered = useMemo(() => activeCategory === "All" ? packages : packages.filter((item) => item.category === activeCategory), [activeCategory]);
-  const addToCart = (item: Package) => { setCart((current) => [...current, item]); setToast(`${item.shortTitle} added to cart`); window.setTimeout(() => setToast(""), 2400); };
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [selected, setSelected] = useState<Package | null>(null);
+  const [cart, setCart] = useState<Package[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [toast, setToast] = useState("");
+  const filtered = useMemo(
+    () =>
+      activeCategory === "All"
+        ? packages
+        : packages.filter(item => item.category === activeCategory),
+    [activeCategory]
+  );
+  const addToCart = (item: Package) => {
+    setCart(current => [...current, item]);
+    setToast(`${item.shortTitle} added to cart`);
+    window.setTimeout(() => setToast(""), 2400);
+  };
   const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
-  if (selected) return <><header className="store-header"><div className="container store-top"><a href="#top" onClick={onBackTop} className="store-logo"><img className="brand-logo-image" src="/images/gtech-logo-reference-cropped_daba8f24.png" alt="G-Tech Consult" /></a><a href={WHATSAPP} className="header-whatsapp"><MessageCircle size={15} /> WhatsApp</a></div></header><DetailPage item={selected} onBack={() => setSelected(null)} onAdd={addToCart} /></>;
-  function onBackTop(event: React.MouseEvent) { event.preventDefault(); setSelected(null); }
-  return <div className="storefront"><div className="promo-bar"><div className="promo-track"><span>Book a free technical site assessment for solar & security installations</span><span>Book a free technical site assessment for solar & security installations</span><span>Book a free technical site assessment for solar & security installations</span></div></div><header className="store-header"><div className="container store-top"><button className="mobile-menu-trigger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">{menuOpen ? <X size={21} /> : <Menu size={21} />}</button><a href="#top" className="store-logo"><img className="brand-logo-image" src="/images/gtech-logo-reference-cropped_daba8f24.png" alt="G-Tech Consult" /></a><nav className={`store-nav ${menuOpen ? "open" : ""}`}>{categories.map((category) => <button key={category} className={activeCategory === category ? "active" : ""} onClick={() => { setActiveCategory(category); setMenuOpen(false); }}>{category}</button>)}<a href="#contact">More <ChevronDown size={13} /></a></nav><div className="store-actions"><button aria-label="Search"><Search size={19} /></button><button aria-label="Cart" className="cart-button" onClick={() => setCartOpen(true)}><ShoppingCart size={19} /><span>{cart.length}</span></button><a href={WHATSAPP} className="header-whatsapp"><MessageCircle size={15} /> WhatsApp</a></div></div></header><main id="top"><section className="store-hero"><div className="container store-hero-inner"><div className="hero-copy-store"><p className="store-kicker">G-Tech Consult · Ondo City</p><h1>Powering secure<br /><span>smart living.</span></h1><p>Solar systems, CCTV security and smart-home solutions designed for the way you live and work.</p><div className="store-hero-actions"><a href="#shop" className="store-button green">Shop solutions <ChevronRight size={17} /></a><a href={WHATSAPP} className="store-button outline">Get a free assessment <MessageCircle size={16} /></a></div></div><div className="hero-product-card"><img src="/images/gtech-premium-comfort-packshot_3201fbb7.png" alt="G-Tech Premium Comfort solar package" /><div><span>Featured solution</span><strong>Premium Comfort Package</strong><b>{formatNaira(14321800)}</b><button onClick={() => setSelected(packages[0])}>View product <ChevronRight size={15} /></button></div></div></div></section><section className="category-strip"><div className="container category-strip-inner"><div><p>Shop by category</p><strong>Find your solution</strong></div>{categories.slice(1).map((category, index) => <button key={category} onClick={() => { setActiveCategory(category); document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" }); }}><span className={`category-icon category-${index}`} />{category}<ChevronRight size={15} /></button>)}</div></section><section id="shop" className="shop-section"><div className="container"><div className="shop-heading"><div><p className="store-kicker">G-Tech marketplace</p><h2>Shop our featured <span>solutions</span></h2></div><div className="shop-heading-right"><button className="filter-button"><SlidersHorizontal size={16} /> Filter</button><select aria-label="Sort packages" defaultValue="featured"><option value="featured">Sort by: Featured</option><option value="low">Price: Low to high</option><option value="high">Price: High to low</option></select></div></div><div className="shop-meta"><span>{filtered.length} packages</span><span>Prices shown in NGN · Installation included</span></div><div className="product-grid">{filtered.map((item) => <ProductCard key={item.slug} item={item} onAdd={addToCart} onView={setSelected} />)}</div><div className="pagination"><button disabled><ChevronLeft size={17} /></button><button className="selected">1</button><button>2</button><button>3</button><span>...</span><button>7</button><button><ChevronRight size={17} /></button></div></div></section><section className="assessment-banner"><div className="container assessment-inner"><div><p className="store-kicker">Not sure where to start?</p><h2>Book a free technical<br /><span>site assessment.</span></h2></div><a href={WHATSAPP} className="store-button dark">Book on WhatsApp <MessageCircle size={17} /></a></div></section><section id="contact" className="contact-store"><div className="container contact-grid"><div><p className="store-kicker">Stay in the loop</p><h2>Get smart with<br /><span>your power.</span></h2><p className="contact-copy">Follow G-Tech Consult for new installations, practical energy tips, offers and smart security updates from Ondo.</p><div className="social-row"><a href="https://www.instagram.com/gtechconsult/">Instagram</a><a href="https://www.facebook.com/gtechconsults/">Facebook</a><a href={WHATSAPP}>WhatsApp</a></div></div><div className="subscribe-card"><p>Sign up for discounts & updates</p><div><input placeholder="Your email address" type="email" aria-label="Email address" /><button>Subscribe</button></div><small>By subscribing, you agree to receive updates from G-Tech Consult.</small></div></div></section></main><footer className="store-footer"><div className="container footer-grid"><div><a href="#top" className="store-logo footer-logo"><img className="brand-logo-image" src="/images/gtech-logo-reference-cropped_daba8f24.png" alt="G-Tech Consult" /></a><p>Solar · CCTV · Smart Homes<br />Powering secure and smart living.</p></div><div><strong>Quick links</strong><a href="#shop">Shop</a><a href="#contact">Contact us</a><a href={MAPS}>Find us in Ondo</a></div><div><strong>Contact</strong><a href={PHONE_PRIMARY}>+234 816 749 8489</a><a href={PHONE_SECONDARY}>0915 700 0010</a><a href={WHATSAPP}>Chat on WhatsApp</a><a href={MAPS}>Adesuper Junction, Ondo City</a></div><div><strong>Opening hours</strong><span>Mon – Sat</span><span>8:00 AM – 7:00 PM</span><a href={WHATSAPP} className="footer-chat"><MessageCircle size={15} /> Typically replies quickly</a></div></div><div className="container footer-bottom"><span>© {new Date().getFullYear()} G-Tech Consult. All rights reserved.</span><span>NGN ₦ · Terms · Privacy</span></div></footer>{toast && <div className="cart-toast"><ShoppingCart size={16} /> {toast}</div>}{cartOpen && <div className="cart-drawer-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(event) => event.stopPropagation()}><div className="cart-drawer-head"><h2>Your cart <span>({cart.length})</span></h2><button onClick={() => setCartOpen(false)} aria-label="Close cart"><X size={20} /></button></div>{cart.length === 0 ? <div className="empty-cart"><ShoppingCart size={38} /><p>Your cart is empty.</p><span>Add packages to start a quote.</span></div> : <><div className="cart-items">{cart.map((item, index) => <div key={`${item.slug}-${index}`}><img src={item.image} alt="" /><div><strong>{item.title}</strong><span>{formatNaira(item.price)}</span></div></div>)}</div><div className="cart-total"><span>Estimated total</span><strong>{formatNaira(cartTotal)}</strong></div><a href={`${WHATSAPP}?text=${encodeURIComponent(`Hello G-Tech Consult, I would like to request a quote for: ${cart.map((item) => item.title).join(", ")}.`)}`} className="store-button green full">Request quote on WhatsApp <MessageCircle size={16} /></a></>}</aside></div>}</div>;
+  return (
+    <div className="storefront">
+      <SeoHead path="/" />
+      <div className="promo-bar">
+        <div className="promo-track">
+          <span>
+            Book a free technical site assessment for solar & security
+            installations
+          </span>
+          <span>
+            Book a free technical site assessment for solar & security
+            installations
+          </span>
+          <span>
+            Book a free technical site assessment for solar & security
+            installations
+          </span>
+        </div>
+      </div>
+      <SiteHeader />
+      <div className="container cart-access">
+        <button
+          className="store-button outline"
+          onClick={() => setCartOpen(true)}
+          aria-label={`Open cart (${cart.length} items)`}
+        >
+          <ShoppingCart size={17} /> Cart ({cart.length})
+        </button>
+      </div>
+      {selected ? (
+        <main id="main-content">
+          <DetailPage
+            item={selected}
+            onBack={() => setSelected(null)}
+            onAdd={addToCart}
+          />
+        </main>
+      ) : (
+        <main id="main-content">
+          <section id="top" className="store-hero">
+            <div className="container store-hero-inner">
+              <div className="hero-copy-store">
+                <p className="store-kicker">G-Tech Consult</p>
+                <h1>Reliable Power. Smarter Security. Better Living.</h1>
+                <p>
+                  Solar, inverter, battery, CCTV and smart-home solutions for
+                  homes and businesses.
+                </p>
+                <div className="store-hero-actions">
+                  <a href="#shop" className="store-button green">
+                    Shop solutions <ChevronRight size={17} />
+                  </a>
+                  <a href={WHATSAPP} className="store-button outline">
+                    Get a free assessment <MessageCircle size={16} />
+                  </a>
+                </div>
+              </div>
+              <div className="hero-product-card">
+                <img
+                  src="/images/gtech-premium-comfort-packshot_3201fbb7.png"
+                  alt="G-Tech Premium Comfort solar package"
+                />
+                <div>
+                  <span>Featured solution</span>
+                  <strong>Premium Comfort Package</strong>
+                  <b>{formatNaira(14321800)}</b>
+                  <button onClick={() => setSelected(packages[0])}>
+                    View product <ChevronRight size={15} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section className="category-strip">
+            <div className="container category-strip-inner">
+              <div>
+                <p>Shop by category</p>
+                <strong>Find your solution</strong>
+              </div>
+              {categories.slice(1).map((category, index) => (
+                <button
+                  key={category}
+                  onClick={() => {
+                    setActiveCategory(category);
+                    document
+                      .getElementById("shop")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  <span className={`category-icon category-${index}`} />
+                  {category}
+                  <ChevronRight size={15} />
+                </button>
+              ))}
+            </div>
+          </section>
+          <section className="home-services">
+            <div className="container">
+              <div className="section-heading">
+                <p className="page-eyebrow">Local technical services</p>
+                <h2>Power, security and automation built around your needs</h2>
+              </div>
+              <div className="service-link-grid">
+                {SERVICE_PAGES.map(service => (
+                  <a href={service.path} key={service.path}>
+                    <h3>{service.h1}</h3>
+                    <p>{service.description}</p>
+                    <span>Explore service →</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
+          <section id="shop" className="shop-section">
+            <div className="container">
+              <div className="shop-heading">
+                <div>
+                  <p className="store-kicker">G-Tech marketplace</p>
+                  <h2>
+                    Shop our featured <span>solutions</span>
+                  </h2>
+                </div>
+                <div className="shop-heading-right">
+                  <button className="filter-button">
+                    <SlidersHorizontal size={16} /> Filter
+                  </button>
+                  <select aria-label="Sort packages" defaultValue="featured">
+                    <option value="featured">Sort by: Featured</option>
+                    <option value="low">Price: Low to high</option>
+                    <option value="high">Price: High to low</option>
+                  </select>
+                </div>
+              </div>
+              <div className="shop-meta">
+                <span>{filtered.length} packages</span>
+                <span>Prices shown in NGN · Installation included</span>
+              </div>
+              <div className="product-grid">
+                {filtered.map(item => (
+                  <ProductCard
+                    key={item.slug}
+                    item={item}
+                    onAdd={addToCart}
+                    onView={setSelected}
+                  />
+                ))}
+              </div>
+              <div className="pagination">
+                <button disabled>
+                  <ChevronLeft size={17} />
+                </button>
+                <button className="selected">1</button>
+                <button>2</button>
+                <button>3</button>
+                <span>...</span>
+                <button>7</button>
+                <button>
+                  <ChevronRight size={17} />
+                </button>
+              </div>
+            </div>
+          </section>
+          <section className="assessment-banner">
+            <div className="container assessment-inner">
+              <div>
+                <p className="store-kicker">Not sure where to start?</p>
+                <h2>
+                  Book a free technical
+                  <br />
+                  <span>site assessment.</span>
+                </h2>
+              </div>
+              <a href={WHATSAPP} className="store-button dark">
+                Book on WhatsApp <MessageCircle size={17} />
+              </a>
+            </div>
+          </section>
+          <section id="contact" className="contact-store">
+            <div className="container contact-grid">
+              <div>
+                <p className="store-kicker">Stay in the loop</p>
+                <h2>
+                  Get smart with
+                  <br />
+                  <span>your power.</span>
+                </h2>
+                <p className="contact-copy">
+                  Follow G-Tech Consult for new installations, practical energy
+                  tips, offers and smart security updates from Ondo.
+                </p>
+                <div className="social-row">
+                  <a href="https://www.instagram.com/gtechconsult/">
+                    Instagram
+                  </a>
+                  <a href="https://www.facebook.com/gtechconsults/">Facebook</a>
+                  <a href={WHATSAPP}>WhatsApp</a>
+                </div>
+              </div>
+              <div className="subscribe-card">
+                <p>Sign up for discounts & updates</p>
+                <div>
+                  <input
+                    placeholder="Your email address"
+                    type="email"
+                    aria-label="Email address"
+                  />
+                  <button>Subscribe</button>
+                </div>
+                <small>
+                  By subscribing, you agree to receive updates from G-Tech
+                  Consult.
+                </small>
+              </div>
+            </div>
+          </section>
+        </main>
+      )}
+      <SiteFooter />
+      {toast && (
+        <div className="cart-toast" role="status">
+          <ShoppingCart size={16} /> {toast}
+        </div>
+      )}
+      {cartOpen && (
+        <div
+          className="cart-drawer-backdrop"
+          onClick={() => setCartOpen(false)}
+        >
+          <aside
+            className="cart-drawer"
+            onClick={event => event.stopPropagation()}
+          >
+            <div className="cart-drawer-head">
+              <h2>
+                Your cart <span>({cart.length})</span>
+              </h2>
+              <button
+                onClick={() => setCartOpen(false)}
+                aria-label="Close cart"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            {cart.length === 0 ? (
+              <div className="empty-cart">
+                <ShoppingCart size={38} />
+                <p>Your cart is empty.</p>
+                <span>Add packages to start a quote.</span>
+              </div>
+            ) : (
+              <>
+                <div className="cart-items">
+                  {cart.map((item, index) => (
+                    <div key={`${item.slug}-${index}`}>
+                      <img src={item.image} alt="" />
+                      <div>
+                        <strong>{item.title}</strong>
+                        <span>{formatNaira(item.price)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="cart-total">
+                  <span>Estimated total</span>
+                  <strong>{formatNaira(cartTotal)}</strong>
+                </div>
+                <a
+                  href={`${WHATSAPP}?text=${encodeURIComponent(`Hello G-Tech Consult, I would like to request a quote for: ${cart.map(item => item.title).join(", ")}.`)}`}
+                  className="store-button green full"
+                >
+                  Request quote on WhatsApp <MessageCircle size={16} />
+                </a>
+              </>
+            )}
+          </aside>
+        </div>
+      )}
+    </div>
+  );
 }
 
 import React from "react";

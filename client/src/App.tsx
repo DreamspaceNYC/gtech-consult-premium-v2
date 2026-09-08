@@ -1,38 +1,56 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Router as WouterRouter, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import ServicePage from "./pages/ServicePage";
+import SolarPackages from "./pages/SolarPackages";
+import Projects from "./pages/Projects";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
+const servicePaths = [
+  "/solar-installation-ondo-city",
+  "/solar-installation-ondo-state",
+  "/inverter-lithium-battery-installation",
+  "/cctv-installation-ondo",
+  "/smart-home-automation",
+] as const;
 
-function Router() {
+function AppRoutes() {
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
+      <Route path="/" component={Home} />
+      {servicePaths.map(path => (
+        <Route path={path} key={path}>
+          <ServicePage path={path} />
+        </Route>
+      ))}
+      <Route path="/solar-packages" component={SolarPackages} />
+      <Route path="/projects" component={Projects} />
+      <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
+      <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
   );
 }
 
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
+export type AppProps = {
+  ssrPath?: string;
+};
 
-function App() {
+function App({ ssrPath }: AppProps) {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <WouterRouter ssrPath={ssrPath}>
+            <AppRoutes />
+          </WouterRouter>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
