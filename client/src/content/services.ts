@@ -25,11 +25,11 @@ export type ServicePageContent = {
 export const SERVICE_PAGES: readonly ServicePageContent[] = [
   {
     path: "/solar-installation-ondo-city",
-    title: "Solar Installation in Ondo City | G-Tech Consult",
+    title: "Solar Installation for Homes & Businesses | G-Tech Consult",
     description:
       "Get a properly assessed solar power system for your Ondo City home or business, installed and commissioned by the G-Tech Consult team.",
-    h1: "Solar Installation in Ondo City for Homes and Businesses",
-    eyebrow: "Local solar installation",
+    h1: "Solar Installation for Homes and Businesses",
+    eyebrow: "Solar power solutions",
     introduction:
       "A dependable solar system starts with the appliances you need to power, when you use them and the backup time you expect. We assess those needs before recommending the inverter, battery, panels, protection and cabling.",
     benefits: [
@@ -73,15 +73,15 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
           "Runtime depends on usable battery capacity, connected load, appliance duty cycles, battery settings and charging conditions. We provide an estimate after measuring the intended loads.",
       },
     ],
-    cta: "Request a solar site assessment in Ondo City",
+    cta: "Request a solar site assessment",
   },
   {
     path: "/solar-installation-ondo-state",
-    title: "Solar Installation Across Ondo State | G-Tech Consult",
+    title: "Custom Solar Installation Services | G-Tech Consult",
     description:
       "Plan a solar installation for your home or business across Ondo State with site assessment, suitable system sizing and professional commissioning.",
-    h1: "Solar Installation Services Across Ondo State",
-    eyebrow: "Scheduled statewide service",
+    h1: "Custom Solar Installation Services",
+    eyebrow: "Tailored solar solutions",
     introduction:
       "Customers outside Ondo City can arrange a scheduled solar assessment. We confirm the location, travel requirements, electrical condition and installation scope before finalizing equipment and logistics.",
     benefits: [
@@ -125,14 +125,14 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
           "Yes. Commercial requirements are assessed from operating hours, critical loads, starting currents, available space and the required level of backup.",
       },
     ],
-    cta: "Check solar installation availability in your Ondo State location",
+    cta: "Check solar installation availability at your location",
   },
   {
     path: "/inverter-lithium-battery-installation",
-    title: "Inverter & Lithium Battery Installation in Ondo | G-Tech Consult",
+    title: "Inverter & Lithium Battery Installation | G-Tech Consult",
     description:
       "Install a correctly sized inverter and lithium battery backup system in Ondo with protected cabling, commissioning and practical user guidance.",
-    h1: "Inverter and Lithium Battery Installation in Ondo",
+    h1: "Inverter and Lithium Battery Installation",
     eyebrow: "Backup power systems",
     introduction:
       "An inverter and lithium battery should be matched to the connected load, charging source and desired backup period. We assess compatibility and installation conditions before recommending a system.",
@@ -181,10 +181,10 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
   },
   {
     path: "/cctv-installation-ondo",
-    title: "CCTV Installation in Ondo | G-Tech Consult",
+    title: "CCTV Installation | G-Tech Consult",
     description:
       "Protect your Ondo home or business with surveyed CCTV camera placement, recording setup, protected cabling and practical system handover.",
-    h1: "CCTV Installation for Homes and Businesses in Ondo",
+    h1: "CCTV Installation for Homes and Businesses",
     eyebrow: "Security camera installation",
     introduction:
       "Useful CCTV coverage depends on camera position, lighting, image detail, recording time and the areas that matter most. We survey the property before agreeing the camera and recorder layout.",
@@ -229,14 +229,14 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
           "Night performance depends on the camera, distance, scene lighting, reflective surfaces and placement. The survey helps us choose and position cameras for the area.",
       },
     ],
-    cta: "Book a CCTV survey in Ondo",
+    cta: "Book a CCTV survey",
   },
   {
     path: "/smart-home-automation",
-    title: "Smart Home Automation in Ondo | G-Tech Consult",
+    title: "Smart Home Automation | G-Tech Consult",
     description:
       "Control selected lighting, access, appliances and security features with a smart-home solution assessed and installed by G-Tech Consult in Ondo.",
-    h1: "Smart Home Automation in Ondo",
+    h1: "Smart Home Automation",
     eyebrow: "Practical connected living",
     introduction:
       "Smart-home automation should make daily routines simpler without removing practical manual control. We scope the devices, connectivity, electrical work and security considerations before installation.",
