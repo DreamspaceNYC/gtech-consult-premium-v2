@@ -8,6 +8,17 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { INDEXABLE_PATHS, getRouteSeo } from "./routes";
 
 describe("canonical business routing", () => {
+  it("keeps all page titles and rendered headings geographically neutral", () => {
+    for (const path of INDEXABLE_PATHS) {
+      const seo = getRouteSeo(path);
+      expect(seo.title).not.toMatch(/ondo/i);
+      expect(seo.h1).not.toMatch(/ondo/i);
+      const html = renderToStaticMarkup(createElement(App, { ssrPath: path }));
+      const headings = [...html.matchAll(/<h[1-6]\b[^>]*>([\s\S]*?)<\/h[1-6]>/g)];
+      for (const heading of headings) expect(heading[1]).not.toMatch(/ondo/i);
+    }
+  });
+
   it("generates the approved contact URL and identity", () => {
     expect(BUSINESS.name).toBe("G-Tech Consult");
     expect(BUSINESS.canonicalOrigin).toBe("https://gtechconsult.ng");
