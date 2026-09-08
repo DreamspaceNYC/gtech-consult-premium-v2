@@ -56,7 +56,7 @@ describe("structured local business data", () => {
     const head = renderSeoHead("/contact");
 
     expect(head).toContain(
-      "<title>Contact G-Tech Consult in Ondo City</title>"
+      '<title data-seo-managed="true">Contact G-Tech Consult in Ondo City</title>'
     );
     expect(head).toContain(
       '<link data-seo-managed="true" rel="canonical" href="https://gtechconsult.ng/contact">'

@@ -24,7 +24,7 @@ export function renderSeoHead(path: string): string {
   });
 
   return [
-    `<title>${escapeHtml(route.title)}</title>`,
+    `<title data-seo-managed="true">${escapeHtml(route.title)}</title>`,
     tag("meta", { name: "description", content: route.description }),
     tag("meta", { name: "robots", content: route.robots }),
     tag("link", { rel: "canonical", href: route.canonical }),

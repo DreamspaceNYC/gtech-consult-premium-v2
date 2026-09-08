@@ -32,9 +32,9 @@ function buildHtml(routePath) {
   const { appHtml, headHtml } = render(routePath);
   const withHead = template.replace(
     new RegExp(`${headStart}[\\s\\S]*?${headEnd}`),
-    `${headStart}\n    ${headHtml}\n    ${headEnd}`
+    () => `${headStart}\n    ${headHtml}\n    ${headEnd}`
   );
-  return withHead.replace(emptyRoot, `<div id="root">${appHtml}</div>`);
+  return withHead.replace(emptyRoot, () => `<div id="root">${appHtml}</div>`);
 }
 
 async function writeRoute(routePath, html) {
@@ -46,7 +46,13 @@ async function writeRoute(routePath, html) {
   await writeFile(target, html, "utf8");
 }
 
-for (const routePath of getIndexablePaths()) {
+const indexablePaths = [...getIndexablePaths()];
+await writeFile(
+  path.join(projectRoot, "dist", "seo-routes.json"),
+  JSON.stringify(indexablePaths)
+);
+
+for (const routePath of indexablePaths) {
   await writeRoute(routePath, buildHtml(routePath));
 }
 
