@@ -1914,3 +1914,9 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+.cart-access {
+  display: flex;
+  justify-content: flex-end;
+  padding-block: 12px;
+}

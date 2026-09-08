@@ -199,18 +199,6 @@ export default function Home() {
     window.setTimeout(() => setToast(""), 2400);
   };
   const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
-  if (selected)
-    return (
-      <>
-        <SeoHead path="/" />
-        <SiteHeader />
-        <DetailPage
-          item={selected}
-          onBack={() => setSelected(null)}
-          onAdd={addToCart}
-        />
-      </>
-    );
   return (
     <div className="storefront">
       <SeoHead path="/" />
@@ -231,186 +219,207 @@ export default function Home() {
         </div>
       </div>
       <SiteHeader />
-      <main id="main-content">
-        <section id="top" className="store-hero">
-          <div className="container store-hero-inner">
-            <div className="hero-copy-store">
-              <p className="store-kicker">G-Tech Consult · Ondo City</p>
-              <h1>Solar Installation Company in Ondo City.</h1>
-              <p>
-                G-Tech Consult assesses and installs solar power, inverter and
-                lithium battery, CCTV security and smart-home solutions for
-                homes and businesses in Ondo.
-              </p>
-              <div className="store-hero-actions">
-                <a href="#shop" className="store-button green">
-                  Shop solutions <ChevronRight size={17} />
-                </a>
-                <a href={WHATSAPP} className="store-button outline">
-                  Get a free assessment <MessageCircle size={16} />
-                </a>
+      <div className="container cart-access">
+        <button
+          className="store-button outline"
+          onClick={() => setCartOpen(true)}
+          aria-label={`Open cart (${cart.length} items)`}
+        >
+          <ShoppingCart size={17} /> Cart ({cart.length})
+        </button>
+      </div>
+      {selected ? (
+        <main id="main-content">
+          <DetailPage
+            item={selected}
+            onBack={() => setSelected(null)}
+            onAdd={addToCart}
+          />
+        </main>
+      ) : (
+        <main id="main-content">
+          <section id="top" className="store-hero">
+            <div className="container store-hero-inner">
+              <div className="hero-copy-store">
+                <p className="store-kicker">G-Tech Consult · Ondo City</p>
+                <h1>Solar Installation Company in Ondo City.</h1>
+                <p>
+                  G-Tech Consult assesses and installs solar power, inverter and
+                  lithium battery, CCTV security and smart-home solutions for
+                  homes and businesses in Ondo.
+                </p>
+                <div className="store-hero-actions">
+                  <a href="#shop" className="store-button green">
+                    Shop solutions <ChevronRight size={17} />
+                  </a>
+                  <a href={WHATSAPP} className="store-button outline">
+                    Get a free assessment <MessageCircle size={16} />
+                  </a>
+                </div>
+              </div>
+              <div className="hero-product-card">
+                <img
+                  src="/images/gtech-premium-comfort-packshot_3201fbb7.png"
+                  alt="G-Tech Premium Comfort solar package"
+                />
+                <div>
+                  <span>Featured solution</span>
+                  <strong>Premium Comfort Package</strong>
+                  <b>{formatNaira(14321800)}</b>
+                  <button onClick={() => setSelected(packages[0])}>
+                    View product <ChevronRight size={15} />
+                  </button>
+                </div>
               </div>
             </div>
-            <div className="hero-product-card">
-              <img
-                src="/images/gtech-premium-comfort-packshot_3201fbb7.png"
-                alt="G-Tech Premium Comfort solar package"
-              />
+          </section>
+          <section className="category-strip">
+            <div className="container category-strip-inner">
               <div>
-                <span>Featured solution</span>
-                <strong>Premium Comfort Package</strong>
-                <b>{formatNaira(14321800)}</b>
-                <button onClick={() => setSelected(packages[0])}>
-                  View product <ChevronRight size={15} />
+                <p>Shop by category</p>
+                <strong>Find your solution</strong>
+              </div>
+              {categories.slice(1).map((category, index) => (
+                <button
+                  key={category}
+                  onClick={() => {
+                    setActiveCategory(category);
+                    document
+                      .getElementById("shop")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  <span className={`category-icon category-${index}`} />
+                  {category}
+                  <ChevronRight size={15} />
+                </button>
+              ))}
+            </div>
+          </section>
+          <section className="home-services">
+            <div className="container">
+              <div className="section-heading">
+                <p className="page-eyebrow">Local technical services</p>
+                <h2>Power, security and automation built around your needs</h2>
+              </div>
+              <div className="service-link-grid">
+                {SERVICE_PAGES.map(service => (
+                  <a href={service.path} key={service.path}>
+                    <h3>{service.h1}</h3>
+                    <p>{service.description}</p>
+                    <span>Explore service →</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
+          <section id="shop" className="shop-section">
+            <div className="container">
+              <div className="shop-heading">
+                <div>
+                  <p className="store-kicker">G-Tech marketplace</p>
+                  <h2>
+                    Shop our featured <span>solutions</span>
+                  </h2>
+                </div>
+                <div className="shop-heading-right">
+                  <button className="filter-button">
+                    <SlidersHorizontal size={16} /> Filter
+                  </button>
+                  <select aria-label="Sort packages" defaultValue="featured">
+                    <option value="featured">Sort by: Featured</option>
+                    <option value="low">Price: Low to high</option>
+                    <option value="high">Price: High to low</option>
+                  </select>
+                </div>
+              </div>
+              <div className="shop-meta">
+                <span>{filtered.length} packages</span>
+                <span>Prices shown in NGN · Installation included</span>
+              </div>
+              <div className="product-grid">
+                {filtered.map(item => (
+                  <ProductCard
+                    key={item.slug}
+                    item={item}
+                    onAdd={addToCart}
+                    onView={setSelected}
+                  />
+                ))}
+              </div>
+              <div className="pagination">
+                <button disabled>
+                  <ChevronLeft size={17} />
+                </button>
+                <button className="selected">1</button>
+                <button>2</button>
+                <button>3</button>
+                <span>...</span>
+                <button>7</button>
+                <button>
+                  <ChevronRight size={17} />
                 </button>
               </div>
             </div>
-          </div>
-        </section>
-        <section className="category-strip">
-          <div className="container category-strip-inner">
-            <div>
-              <p>Shop by category</p>
-              <strong>Find your solution</strong>
-            </div>
-            {categories.slice(1).map((category, index) => (
-              <button
-                key={category}
-                onClick={() => {
-                  setActiveCategory(category);
-                  document
-                    .getElementById("shop")
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
-              >
-                <span className={`category-icon category-${index}`} />
-                {category}
-                <ChevronRight size={15} />
-              </button>
-            ))}
-          </div>
-        </section>
-        <section className="home-services">
-          <div className="container">
-            <div className="section-heading">
-              <p className="page-eyebrow">Local technical services</p>
-              <h2>Power, security and automation built around your needs</h2>
-            </div>
-            <div className="service-link-grid">
-              {SERVICE_PAGES.map(service => (
-                <a href={service.path} key={service.path}>
-                  <h3>{service.h1}</h3>
-                  <p>{service.description}</p>
-                  <span>Explore service →</span>
-                </a>
-              ))}
-            </div>
-          </div>
-        </section>
-        <section id="shop" className="shop-section">
-          <div className="container">
-            <div className="shop-heading">
+          </section>
+          <section className="assessment-banner">
+            <div className="container assessment-inner">
               <div>
-                <p className="store-kicker">G-Tech marketplace</p>
+                <p className="store-kicker">Not sure where to start?</p>
                 <h2>
-                  Shop our featured <span>solutions</span>
+                  Book a free technical
+                  <br />
+                  <span>site assessment.</span>
                 </h2>
               </div>
-              <div className="shop-heading-right">
-                <button className="filter-button">
-                  <SlidersHorizontal size={16} /> Filter
-                </button>
-                <select aria-label="Sort packages" defaultValue="featured">
-                  <option value="featured">Sort by: Featured</option>
-                  <option value="low">Price: Low to high</option>
-                  <option value="high">Price: High to low</option>
-                </select>
-              </div>
+              <a href={WHATSAPP} className="store-button dark">
+                Book on WhatsApp <MessageCircle size={17} />
+              </a>
             </div>
-            <div className="shop-meta">
-              <span>{filtered.length} packages</span>
-              <span>Prices shown in NGN · Installation included</span>
-            </div>
-            <div className="product-grid">
-              {filtered.map(item => (
-                <ProductCard
-                  key={item.slug}
-                  item={item}
-                  onAdd={addToCart}
-                  onView={setSelected}
-                />
-              ))}
-            </div>
-            <div className="pagination">
-              <button disabled>
-                <ChevronLeft size={17} />
-              </button>
-              <button className="selected">1</button>
-              <button>2</button>
-              <button>3</button>
-              <span>...</span>
-              <button>7</button>
-              <button>
-                <ChevronRight size={17} />
-              </button>
-            </div>
-          </div>
-        </section>
-        <section className="assessment-banner">
-          <div className="container assessment-inner">
-            <div>
-              <p className="store-kicker">Not sure where to start?</p>
-              <h2>
-                Book a free technical
-                <br />
-                <span>site assessment.</span>
-              </h2>
-            </div>
-            <a href={WHATSAPP} className="store-button dark">
-              Book on WhatsApp <MessageCircle size={17} />
-            </a>
-          </div>
-        </section>
-        <section id="contact" className="contact-store">
-          <div className="container contact-grid">
-            <div>
-              <p className="store-kicker">Stay in the loop</p>
-              <h2>
-                Get smart with
-                <br />
-                <span>your power.</span>
-              </h2>
-              <p className="contact-copy">
-                Follow G-Tech Consult for new installations, practical energy
-                tips, offers and smart security updates from Ondo.
-              </p>
-              <div className="social-row">
-                <a href="https://www.instagram.com/gtechconsult/">Instagram</a>
-                <a href="https://www.facebook.com/gtechconsults/">Facebook</a>
-                <a href={WHATSAPP}>WhatsApp</a>
-              </div>
-            </div>
-            <div className="subscribe-card">
-              <p>Sign up for discounts & updates</p>
+          </section>
+          <section id="contact" className="contact-store">
+            <div className="container contact-grid">
               <div>
-                <input
-                  placeholder="Your email address"
-                  type="email"
-                  aria-label="Email address"
-                />
-                <button>Subscribe</button>
+                <p className="store-kicker">Stay in the loop</p>
+                <h2>
+                  Get smart with
+                  <br />
+                  <span>your power.</span>
+                </h2>
+                <p className="contact-copy">
+                  Follow G-Tech Consult for new installations, practical energy
+                  tips, offers and smart security updates from Ondo.
+                </p>
+                <div className="social-row">
+                  <a href="https://www.instagram.com/gtechconsult/">
+                    Instagram
+                  </a>
+                  <a href="https://www.facebook.com/gtechconsults/">Facebook</a>
+                  <a href={WHATSAPP}>WhatsApp</a>
+                </div>
               </div>
-              <small>
-                By subscribing, you agree to receive updates from G-Tech
-                Consult.
-              </small>
+              <div className="subscribe-card">
+                <p>Sign up for discounts & updates</p>
+                <div>
+                  <input
+                    placeholder="Your email address"
+                    type="email"
+                    aria-label="Email address"
+                  />
+                  <button>Subscribe</button>
+                </div>
+                <small>
+                  By subscribing, you agree to receive updates from G-Tech
+                  Consult.
+                </small>
+              </div>
             </div>
-          </div>
-        </section>
-      </main>
+          </section>
+        </main>
+      )}
       <SiteFooter />
       {toast && (
-        <div className="cart-toast">
+        <div className="cart-toast" role="status">
           <ShoppingCart size={16} /> {toast}
         </div>
       )}
