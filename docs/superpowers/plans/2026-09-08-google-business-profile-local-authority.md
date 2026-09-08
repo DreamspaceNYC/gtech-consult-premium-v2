@@ -211,7 +211,7 @@ For every project with customer permission, publish a useful project entry with 
 - Create during execution: `docs/local-seo/review-log.csv`
 
 **Interfaces:**
-- Produces: repeatable post-completion review requests and response tracking.
+- Produces: `REVIEW_URL`, repeatable post-completion review requests, and response tracking.
 - Consumes: completed customer jobs and Google's direct review link from the verified dashboard.
 
 - [ ] **Step 1: Save the official review link**
@@ -220,13 +220,13 @@ Copy the `Ask for reviews` link from the verified profile dashboard. Test it in 
 
 - [ ] **Step 2: Use one neutral request**
 
-Use this message only after genuine work is completed:
+Set `REVIEW_URL` to the tested dashboard link from Step 1. Send this exact sentence followed by one space and `REVIEW_URL`, only after genuine work is completed:
 
 ```text
-Thank you for choosing G-Tech Consult. If you have a moment, please share an honest Google review about the service you received. Your feedback helps other customers understand our work: [official Google review link]
+Thank you for choosing G-Tech Consult. If you have a moment, please share an honest Google review about the service you received. Your feedback helps other customers understand our work:
 ```
 
-Replace the bracketed link before sending. Do not ask only satisfied customers, prescribe keywords, or offer discounts/rewards.
+Do not ask only satisfied customers, prescribe keywords, or offer discounts/rewards.
 
 - [ ] **Step 3: Request reviews steadily**
 
