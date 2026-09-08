@@ -6,6 +6,10 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import ServicePage from "./pages/ServicePage";
+import SolarPackages from "./pages/SolarPackages";
+import Projects from "./pages/Projects";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 const servicePaths = [
   "/solar-installation-ondo-city",
@@ -24,6 +28,10 @@ function AppRoutes() {
           <ServicePage path={path} />
         </Route>
       ))}
+      <Route path="/solar-packages" component={SolarPackages} />
+      <Route path="/projects" component={Projects} />
+      <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
