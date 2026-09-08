@@ -121,10 +121,10 @@ describe("canonical business routing", () => {
     expect(contact).toContain(BUSINESS.mapsUrl);
   });
 
-  it("positions the homepage for Ondo solar searches and links every service", () => {
+  it("uses broad homepage branding while linking every local service", () => {
     const html = renderToStaticMarkup(createElement(App, { ssrPath: "/" }));
 
-    expect(html).toContain("Solar Installation Company in Ondo City");
+    expect(html).toContain("Reliable Power. Smarter Security. Better Living.");
     expect(html.match(/<h1(?:\s|>)/g)).toHaveLength(1);
     for (const path of INDEXABLE_PATHS.filter(path => path !== "/")) {
       expect(html).toContain(`href="${path}"`);

@@ -241,12 +241,11 @@ export default function Home() {
           <section id="top" className="store-hero">
             <div className="container store-hero-inner">
               <div className="hero-copy-store">
-                <p className="store-kicker">G-Tech Consult · Ondo City</p>
-                <h1>Solar Installation Company in Ondo City.</h1>
+                <p className="store-kicker">G-Tech Consult</p>
+                <h1>Reliable Power. Smarter Security. Better Living.</h1>
                 <p>
-                  G-Tech Consult assesses and installs solar power, inverter and
-                  lithium battery, CCTV security and smart-home solutions for
-                  homes and businesses in Ondo.
+                  Solar, inverter, battery, CCTV and smart-home solutions for
+                  homes and businesses.
                 </p>
                 <div className="store-hero-actions">
                   <a href="#shop" className="store-button green">

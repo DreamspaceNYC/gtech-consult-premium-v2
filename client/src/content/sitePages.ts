@@ -19,7 +19,7 @@ export const SITE_PAGES: Record<StaticPageSlug, SitePage> = {
     title: "Solar Installation Company in Ondo City | G-Tech Consult",
     description:
       "G-Tech Consult installs solar power, inverters, lithium batteries, CCTV and smart-home systems for homes and businesses in Ondo City.",
-    h1: "G-Tech Consult | Solar Installation Company in Ondo City",
+    h1: "Reliable Power. Smarter Security. Better Living.",
   },
   solarPackages: {
     path: "/solar-packages",
