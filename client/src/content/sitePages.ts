@@ -1,0 +1,59 @@
+export type StaticPageSlug =
+  | "home"
+  | "solarPackages"
+  | "projects"
+  | "about"
+  | "contact"
+  | "notFound";
+
+export type SitePage = {
+  path: string;
+  title: string;
+  description: string;
+  h1: string;
+};
+
+export const SITE_PAGES: Record<StaticPageSlug, SitePage> = {
+  home: {
+    path: "/",
+    title: "Solar Installation Company in Ondo City | G-Tech Consult",
+    description:
+      "G-Tech Consult installs solar power, inverters, lithium batteries, CCTV and smart-home systems for homes and businesses in Ondo City.",
+    h1: "G-Tech Consult | Solar Installation Company in Ondo City",
+  },
+  solarPackages: {
+    path: "/solar-packages",
+    title: "Solar Packages and Prices in Ondo | G-Tech Consult",
+    description:
+      "Compare G-Tech Consult solar packages for different power needs, with inverter, battery, panel and installation details for customers in Ondo.",
+    h1: "Solar Packages for Different Power Needs",
+  },
+  projects: {
+    path: "/projects",
+    title: "Solar, CCTV and Automation Projects | G-Tech Consult",
+    description:
+      "Explore the solar, inverter, battery, CCTV and smart-home installation work delivered by G-Tech Consult for customers in and around Ondo.",
+    h1: "Our Installation Work",
+  },
+  about: {
+    path: "/about",
+    title: "About G-Tech Consult | Ondo Energy & Security Specialists",
+    description:
+      "Learn how G-Tech Consult assesses, designs, installs and supports solar power, CCTV and smart-home systems from its Ondo City location.",
+    h1: "About G-Tech Consult",
+  },
+  contact: {
+    path: "/contact",
+    title: "Contact G-Tech Consult in Ondo City",
+    description:
+      "Visit G-Tech Consult at Adesuper Junction in Ondo City, call 0816 749 8489 or request a solar, CCTV or smart-home assessment on WhatsApp.",
+    h1: "Contact G-Tech Consult",
+  },
+  notFound: {
+    path: "/404",
+    title: "Page Not Found | G-Tech Consult",
+    description:
+      "The requested G-Tech Consult page could not be found. Return to our website to explore solar, CCTV and smart-home services in Ondo.",
+    h1: "Page Not Found",
+  },
+};
