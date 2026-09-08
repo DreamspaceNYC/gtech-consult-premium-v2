@@ -30,7 +30,7 @@
 ### New source files
 
 - `client/src/content/business.ts` — canonical name, NAP, hours, social URLs, map URL, and contact URLs.
-- `client/src/content/services.ts` — typed service-page content for four service routes.
+- `client/src/content/services.ts` — typed service-page content for five service routes.
 - `client/src/content/packages.ts` — the existing seven package records extracted from `Home.tsx`.
 - `client/src/content/sitePages.ts` — metadata and page content for home, packages, projects, about, contact, and 404.
 - `client/src/seo/routes.ts` — canonical route registry and route lookup.
