@@ -226,7 +226,7 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
       {
         question: "Will the cameras see clearly at night?",
         answer:
-                   "Night performance depends on the camera, distance, scene lighting, reflective surfaces and placement. The survey helps us choose and position cameras for the area.",
+          "Night performance depends on the camera, distance, scene lighting, reflective surfaces and placement. The survey helps us choose and position cameras for the area.",
       },
     ],
     cta: "Book a CCTV survey in Ondo",
@@ -286,7 +286,7 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
 ];
 
 export function getServiceByPath(
-  pathname: string,
+  pathname: string
 ): ServicePageContent | undefined {
   const normalized =
     pathname === "/" ? "/" : pathname.split(/[?#]/, 1)[0].replace(/\/+$/, "");
