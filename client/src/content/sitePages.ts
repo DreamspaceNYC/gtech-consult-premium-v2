@@ -16,14 +16,14 @@ export type SitePage = {
 export const SITE_PAGES: Record<StaticPageSlug, SitePage> = {
   home: {
     path: "/",
-    title: "Solar Installation Company in Ondo City | G-Tech Consult",
+    title: "Solar Power, Security & Smart Homes | G-Tech Consult",
     description:
       "G-Tech Consult installs solar power, inverters, lithium batteries, CCTV and smart-home systems for homes and businesses in Ondo City.",
     h1: "Reliable Power. Smarter Security. Better Living.",
   },
   solarPackages: {
     path: "/solar-packages",
-    title: "Solar Packages and Prices in Ondo | G-Tech Consult",
+    title: "Solar Packages and Prices | G-Tech Consult",
     description:
       "Compare G-Tech Consult solar packages for different power needs, with inverter, battery, panel and installation details for customers in Ondo.",
     h1: "Solar Packages for Different Power Needs",
@@ -37,14 +37,14 @@ export const SITE_PAGES: Record<StaticPageSlug, SitePage> = {
   },
   about: {
     path: "/about",
-    title: "About G-Tech Consult | Ondo Energy & Security Specialists",
+    title: "About G-Tech Consult | Energy & Security Specialists",
     description:
       "Learn how G-Tech Consult assesses, designs, installs and supports solar power, CCTV and smart-home systems from its Ondo City location.",
     h1: "About G-Tech Consult",
   },
   contact: {
     path: "/contact",
-    title: "Contact G-Tech Consult in Ondo City",
+    title: "Contact G-Tech Consult",
     description:
       "Visit G-Tech Consult at Adesuper Junction in Ondo City, call 0816 749 8489 or request a solar, CCTV or smart-home assessment on WhatsApp.",
     h1: "Contact G-Tech Consult",
