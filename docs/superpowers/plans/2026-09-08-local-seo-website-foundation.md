@@ -179,7 +179,7 @@ git commit -m "feat: centralize canonical local SEO data"
 
 - [ ] **Step 1: Write failing content-integrity tests**
 
-Test that the four service records use these paths:
+Test that the five service records use these paths:
 
 ```ts
 expect(SERVICE_PAGES.map(service => service.path)).toEqual([
@@ -489,7 +489,7 @@ git commit -m "feat: position homepage for solar installation in Ondo"
 
 **Interfaces:**
 - Consumes: `App({ ssrPath })`, `INDEXABLE_PATHS`, and `renderSeoHead(path)`.
-- Produces: `render(path): { appHtml: string; headHtml: string }` and complete static HTML under `dist/public`.
+- Produces: `render(path): { appHtml: string; headHtml: string }`, `getIndexablePaths(): readonly string[]`, and complete static HTML under `dist/public`.
 
 - [ ] **Step 1: Add a failing pre-render command**
 
@@ -531,7 +531,7 @@ In `main.tsx`, select `#root`. If it has child nodes, call `hydrateRoot(root, <A
 
 `scripts/prerender.mjs` must:
 
-1. import `INDEXABLE_PATHS` from the compiled SSR module through an exported `getIndexablePaths()`;
+1. call `getIndexablePaths()` from the compiled SSR module;
 2. read `dist/public/index.html` as the Vite-produced asset template;
 3. replace the content between the SEO markers with `headHtml`;
 4. replace `<div id="root"></div>` with the rendered body;
