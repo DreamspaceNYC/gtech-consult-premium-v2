@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { BUSINESS } from "@/content/business";
+import App from "@/App";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { INDEXABLE_PATHS, getRouteSeo } from "./routes";
@@ -62,5 +63,30 @@ describe("canonical business routing", () => {
     expect(markup).toContain(BUSINESS.fullAddress);
     expect(markup).toContain('href="tel:+2348167498489"');
     expect(markup).toContain(BUSINESS.whatsapp);
+  });
+
+  it.each([
+    "/solar-installation-ondo-city",
+    "/solar-installation-ondo-state",
+    "/inverter-lithium-battery-installation",
+    "/cctv-installation-ondo",
+    "/smart-home-automation",
+  ])("server-renders useful service content at %s", path => {
+    const html = renderToStaticMarkup(createElement(App, { ssrPath: path }));
+    const route = getRouteSeo(path);
+
+    expect(html).toContain("<h1");
+    expect(html).toContain(`>${route.h1}</h1>`);
+    expect(html).toContain("Our installation process");
+    expect(html).toContain("Frequently asked questions");
+    expect(html).toContain('href="tel:+2348167498489"');
+    expect(html).toContain(BUSINESS.whatsapp);
+  });
+
+  it("server-renders a real fallback page for an unknown route", () => {
+    const html = renderToStaticMarkup(
+      createElement(App, { ssrPath: "/does-not-exist" })
+    );
+    expect(html).toContain("Page Not Found");
   });
 });
