@@ -1,1 +1,3 @@
-https://www.gtechconsult.ng/* https://gtechconsult.ng/:splat 301
+# Hostname redirects are managed in Cloudflare zone Redirect Rules.
+# www.gtechconsult.ng -> https://gtechconsult.ng (301; preserve path and query).
+# Pages _redirects accepts relative source paths, not hostname conditions.
