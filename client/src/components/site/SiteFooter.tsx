@@ -22,7 +22,10 @@ export function SiteFooter() {
               height="74"
             />
           </a>
-          <p>Solar power, CCTV security and smart-home solutions in Ondo.</p>
+          <p>
+            Solar power, CCTV security and smart-home solutions for homes and
+            businesses. Based in Ondo; ask about service at your location.
+          </p>
         </div>
         <div>
           <strong>Services</strong>

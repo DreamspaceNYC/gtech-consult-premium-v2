@@ -1920,3 +1920,52 @@ a {
   justify-content: flex-end;
   padding-block: 12px;
 }
+
+/* Crawlable package comparison, usable on narrow screens. */
+.comparison-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  border: 1px solid #d9ded9;
+  border-radius: 12px;
+}
+.comparison-scroll:focus-visible {
+  outline: 3px solid #168046;
+  outline-offset: 3px;
+}
+.comparison-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 760px;
+  background: #fff;
+  font-size: 14px;
+}
+.comparison-table caption {
+  text-align: left;
+  padding: 16px;
+  font-weight: 600;
+}
+.comparison-table th,
+.comparison-table td {
+  text-align: left;
+  padding: 16px;
+  border-bottom: 1px solid #e4e9e4;
+  vertical-align: top;
+}
+.comparison-table thead {
+  background: #edf5ee;
+}
+.comparison-table a,
+.faq-list a {
+  color: #136c39;
+  text-decoration: underline;
+}
+.package-list-card[id] {
+  scroll-margin-top: 100px;
+}
+.package-inclusions {
+  margin-block: 16px;
+}
+.package-inclusions summary {
+  cursor: pointer;
+  font-weight: 700;
+}

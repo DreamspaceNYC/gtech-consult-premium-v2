@@ -7,13 +7,13 @@ import {
   MessageCircle,
   ShoppingCart,
   SlidersHorizontal,
-  Star,
   X,
 } from "lucide-react";
 import {
   SOLAR_PACKAGES as packages,
   type SolarPackage as Package,
 } from "@/content/packages";
+import { ASSESSMENT_URL } from "@/content/business";
 import { SERVICE_PAGES } from "@/content/services";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -49,11 +49,6 @@ function ProductCard({
         <p className="product-category">{item.category}</p>
         <h3>{item.title}</h3>
         <div className="product-rating">
-          <Star size={13} fill="currentColor" />
-          <Star size={13} fill="currentColor" />
-          <Star size={13} fill="currentColor" />
-          <Star size={13} fill="currentColor" />
-          <Star size={13} fill="currentColor" />
           <span>G-Tech package</span>
         </div>
         <div className="product-price">
@@ -162,7 +157,7 @@ function DetailPage({
                 Final sizing is confirmed through a technical site assessment.
               </span>
               <a
-                href={`${WHATSAPP}?text=${encodeURIComponent(`Hello G-Tech Consult, I need help choosing a package for my property in Ondo.`)}`}
+                href={`${WHATSAPP}?text=${encodeURIComponent(`Hello G-Tech Consult, I need help choosing a package. My town/state: __. Appliances: __. Required backup hours: __.`)}`}
               >
                 Chat with G-Tech <MessageCircle size={15} />
               </a>
@@ -245,13 +240,15 @@ export default function Home() {
                 <h1>Reliable Power. Smarter Security. Better Living.</h1>
                 <p>
                   Solar, inverter, battery, CCTV and smart-home solutions for
-                  homes and businesses.
+                  homes and businesses. Based in Ondo, with enquiries welcome
+                  from Lagos and elsewhere in Nigeria. Service availability is
+                  confirmed for your location.
                 </p>
                 <div className="store-hero-actions">
                   <a href="#shop" className="store-button green">
                     Shop solutions <ChevronRight size={17} />
                   </a>
-                  <a href={WHATSAPP} className="store-button outline">
+                  <a href={ASSESSMENT_URL} className="store-button outline">
                     Get a free assessment <MessageCircle size={16} />
                   </a>
                 </div>
@@ -298,7 +295,7 @@ export default function Home() {
           <section className="home-services">
             <div className="container">
               <div className="section-heading">
-                <p className="page-eyebrow">Local technical services</p>
+                <p className="page-eyebrow">Technical services</p>
                 <h2>Power, security and automation built around your needs</h2>
               </div>
               <div className="service-link-grid">
@@ -371,7 +368,7 @@ export default function Home() {
                   <span>site assessment.</span>
                 </h2>
               </div>
-              <a href={WHATSAPP} className="store-button dark">
+              <a href={ASSESSMENT_URL} className="store-button dark">
                 Book on WhatsApp <MessageCircle size={17} />
               </a>
             </div>
@@ -387,14 +384,14 @@ export default function Home() {
                 </h2>
                 <p className="contact-copy">
                   Follow G-Tech Consult for new installations, practical energy
-                  tips, offers and smart security updates from Ondo.
+                  tips, offers and smart security updates.
                 </p>
                 <div className="social-row">
                   <a href="https://www.instagram.com/gtechconsult/">
                     Instagram
                   </a>
                   <a href="https://www.facebook.com/gtechconsults/">Facebook</a>
-                  <a href={WHATSAPP}>WhatsApp</a>
+                  <a href={ASSESSMENT_URL}>WhatsApp</a>
                 </div>
               </div>
               <div className="subscribe-card">

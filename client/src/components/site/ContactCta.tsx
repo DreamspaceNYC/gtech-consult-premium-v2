@@ -1,5 +1,5 @@
 import { MessageCircle, Phone } from "lucide-react";
-import { BUSINESS } from "@/content/business";
+import { BUSINESS, ASSESSMENT_URL } from "@/content/business";
 
 export function ContactCta({
   heading = "Let’s assess the right solution for your property",
@@ -18,7 +18,7 @@ export function ContactCta({
           </p>
         </div>
         <div className="contact-cta-actions">
-          <a className="store-button green" href={BUSINESS.whatsapp}>
+          <a className="store-button green" href={ASSESSMENT_URL}>
             <MessageCircle aria-hidden="true" size={16} />
             Chat on WhatsApp
           </a>

@@ -3,6 +3,7 @@ import { ContactCta } from "@/components/site/ContactCta";
 import { PageHero } from "@/components/site/PageHero";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { BUSINESS } from "@/content/business";
 import { SITE_PAGES } from "@/content/sitePages";
 import { SeoHead } from "@/seo/SeoHead";
 
@@ -49,6 +50,12 @@ export default function Projects() {
                 has been approved.
               </p>
             </div>
+            <p>
+              Ask for examples of work completed by G-Tech Consult relevant to
+              your requirements. You can also view installation updates on our{" "}
+              <a href={BUSINESS.instagram}>Instagram</a> and{" "}
+              <a href={BUSINESS.facebook}>Facebook</a> profiles.
+            </p>
             <div className="proof-grid">
               {projectAreas.map((area, index) => (
                 <article className="process-card" key={area.title}>

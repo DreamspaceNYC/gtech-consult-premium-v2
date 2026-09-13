@@ -62,3 +62,5 @@ export const formatPublicHours = () =>
       return `${days}, ${format(opens)}–${format(closes)}`;
     })
     .join("; ");
+
+export const ASSESSMENT_URL = `${BUSINESS.whatsapp}?text=${encodeURIComponent("Hello G-Tech Consult, I would like a site assessment.\nService: \nTown and state: \nProperty type: \nAppliances or requirements: \nRequired backup hours (if applicable): \nBudget range (optional): \nPreferred date: ")}`;

@@ -28,13 +28,13 @@ export const SOLAR_PACKAGES: SolarPackage[] = [
     badge: "PREMIUM COMFORT",
     image: "/images/gtech-premium-comfort-packshot_3201fbb7.png",
     system: "20kVA / 48V heavy-duty solar-inverter package",
-    battery: "20kWh / 48V lithium battery",
+    battery: "Total battery capacity to be confirmed in your itemised quote",
     panels: "24 × 550W monocrystalline solar panels",
     description:
       "A high-capacity system for homes and businesses that want strong daytime performance and dependable overnight support for multiple air conditioners.",
     powers: [
-      "3–4 air conditioners during the daytime",
-      "2 air conditioners overnight until approximately 5:00 AM",
+      "Multiple air conditioners, subject to measured load and system design",
+      "Overnight air-conditioning runtime estimated after assessment",
       "Lighting, TV, fans and other household appliances",
     ],
     items: [
@@ -43,7 +43,11 @@ export const SOLAR_PACKAGES: SolarPackage[] = [
         spec: "10KVA / 48V",
         qty: "2",
       },
-      { name: "Lithium-ion battery", spec: "20kWh / 48V", qty: "2" },
+      {
+        name: "Lithium-ion battery",
+        spec: "Capacity and quantity to be confirmed",
+        qty: "Confirm",
+      },
       { name: "Monocrystalline solar panel", spec: "550W / 48V", qty: "24" },
     ],
     inclusions: [
@@ -71,9 +75,9 @@ export const SOLAR_PACKAGES: SolarPackage[] = [
     description:
       "A balanced high-capacity system for customers who want to run up to two air conditioners alongside everyday home appliances.",
     powers: [
-      "Up to 2 air conditioners day and night",
+      "Up to 2 air conditioners, subject to appliance wattage and usage",
       "Lights, TV, fans and freezer",
-      "Air-conditioning support typically until around 6:00 AM, depending on use",
+      "Overnight runtime depends on connected load and usable battery energy",
     ],
     items: [
       {
@@ -109,9 +113,9 @@ export const SOLAR_PACKAGES: SolarPackage[] = [
     description:
       "A practical one-air-conditioner system for homes that want dependable power for essential appliances with controlled overnight AC use.",
     powers: [
-      "1 air conditioner day and night",
+      "1 air conditioner, subject to appliance wattage and usage",
       "Lights, TV, fans, freezer and essential loads",
-      "Air conditioning typically until around 1:00–5:00 AM, depending on use",
+      "An overnight runtime estimate is provided after load assessment",
     ],
     items: [
       {
@@ -148,7 +152,7 @@ export const SOLAR_PACKAGES: SolarPackage[] = [
       "A dependable essential-load system for lights, television, freezer operation and pumping-machine use without air conditioning.",
     powers: [
       "Lights and TV",
-      "Freezer overnight until daybreak",
+      "Freezer operation subject to load and runtime assessment",
       "Pumping machine",
       "No air conditioner",
     ],
@@ -191,7 +195,7 @@ export const SOLAR_PACKAGES: SolarPackage[] = [
       "Managed usage is required for overnight power",
     ],
     notes: [
-      "To preserve power overnight, the freezer and pumping machine should be switched off by approximately 4:00 PM. Lighting and smaller loads can continue through the night.",
+      "For longer overnight backup, prioritise essential loads. We estimate runtime and advise on freezer and pumping-machine usage after assessing actual demand and charging conditions.",
     ],
     items: [
       {

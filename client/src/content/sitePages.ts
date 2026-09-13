@@ -18,21 +18,21 @@ export const SITE_PAGES: Record<StaticPageSlug, SitePage> = {
     path: "/",
     title: "Solar Power, Security & Smart Homes | G-Tech Consult",
     description:
-      "G-Tech Consult installs solar power, inverters, lithium batteries, CCTV and smart-home systems for homes and businesses in Ondo City.",
+      "G-Tech Consult installs solar power, inverters, lithium batteries, CCTV and smart-home systems for homes and businesses. Based in Ondo; enquire about your location.",
     h1: "Reliable Power. Smarter Security. Better Living.",
   },
   solarPackages: {
     path: "/solar-packages",
     title: "Solar Packages and Prices | G-Tech Consult",
     description:
-      "Compare G-Tech Consult solar packages for different power needs, with inverter, battery, panel and installation details for customers in Ondo.",
+      "Compare G-Tech Consult solar packages for different power needs, with inverter, battery, panel and installation details to help plan your home or business power system.",
     h1: "Solar Packages for Different Power Needs",
   },
   projects: {
     path: "/projects",
     title: "Solar, CCTV and Automation Projects | G-Tech Consult",
     description:
-      "Explore the solar, inverter, battery, CCTV and smart-home installation work delivered by G-Tech Consult for customers in and around Ondo.",
+      "Explore the solar, inverter, battery, CCTV and smart-home installation work delivered by G-Tech Consult for homes and businesses. Ask about completed work relevant to your project.",
     h1: "Our Installation Work",
   },
   about: {
@@ -53,7 +53,7 @@ export const SITE_PAGES: Record<StaticPageSlug, SitePage> = {
     path: "/404",
     title: "Page Not Found | G-Tech Consult",
     description:
-      "The requested G-Tech Consult page could not be found. Return to our website to explore solar, CCTV and smart-home services in Ondo.",
+      "The requested G-Tech Consult page could not be found. Return to our website to explore solar, CCTV and smart-home services.",
     h1: "Page Not Found",
   },
 };

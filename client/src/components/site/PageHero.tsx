@@ -1,5 +1,5 @@
 import { MessageCircle } from "lucide-react";
-import { BUSINESS } from "@/content/business";
+import { BUSINESS, ASSESSMENT_URL } from "@/content/business";
 
 type PageHeroProps = {
   eyebrow: string;
@@ -15,7 +15,7 @@ export function PageHero({ eyebrow, title, description }: PageHeroProps) {
         <h1>{title}</h1>
         <p>{description}</p>
         <div className="page-hero-actions">
-          <a className="store-button green" href={BUSINESS.whatsapp}>
+          <a className="store-button green" href={ASSESSMENT_URL}>
             Request an assessment
             <MessageCircle aria-hidden="true" size={16} />
           </a>

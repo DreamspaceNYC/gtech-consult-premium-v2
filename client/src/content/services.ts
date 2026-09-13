@@ -27,7 +27,7 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
     path: "/solar-installation-ondo-city",
     title: "Solar Installation for Homes & Businesses | G-Tech Consult",
     description:
-      "Get a properly assessed solar power system for your Ondo City home or business, installed and commissioned by the G-Tech Consult team.",
+      "Plan solar installation for your home or business with G-Tech Consult: load assessment, system sizing, installation and commissioning.",
     h1: "Solar Installation for Homes and Businesses",
     eyebrow: "Solar power solutions",
     introduction:
@@ -55,7 +55,7 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
       },
     ],
     areaStatement:
-      "This service is delivered from our customer-facing location at Adesuper Junction and covers homes and businesses across Ondo City.",
+      "Our office is at Adesuper Junction, Ondo City. We serve local properties and welcome enquiries from Lagos and other parts of Nigeria. Assessment availability, travel costs and installation dates are confirmed for your location before booking.",
     faqs: [
       {
         question: "How do you know what size of solar system I need?",
@@ -79,7 +79,7 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
     path: "/solar-installation-ondo-state",
     title: "Custom Solar Installation Services | G-Tech Consult",
     description:
-      "Plan a solar installation for your home or business across Ondo State with site assessment, suitable system sizing and professional commissioning.",
+      "Request a custom solar installation quotation for your property. Share your location in Ondo, Lagos or elsewhere in Nigeria to confirm availability.",
     h1: "Custom Solar Installation Services",
     eyebrow: "Tailored solar solutions",
     introduction:
@@ -107,12 +107,12 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
       },
     ],
     areaStatement:
-      "Scheduled work is available in serviceable locations across Ondo State. Availability, logistics and timing are confirmed before a site visit.",
+      "For projects in Ondo State, Lagos or elsewhere in Nigeria, send your town, property type and power requirements. We confirm whether we can serve your location, including travel arrangements and after-installation support, before you book.",
     faqs: [
       {
         question: "Do you install solar systems outside Ondo City?",
         answer:
-          "Yes, we schedule work in serviceable locations across Ondo State after confirming the exact town, project scope and travel logistics.",
+          "Yes, we schedule work in serviceable locations across Ondo State. For Lagos and other states, share the exact location and project scope so we can confirm availability, travel logistics and support before booking.",
       },
       {
         question: "Is transportation included in every advertised package?",
@@ -131,7 +131,7 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
     path: "/inverter-lithium-battery-installation",
     title: "Inverter & Lithium Battery Installation | G-Tech Consult",
     description:
-      "Install a correctly sized inverter and lithium battery backup system in Ondo with protected cabling, commissioning and practical user guidance.",
+      "Choose inverter and lithium battery backup matched to your appliances, with compatibility checks, installation, commissioning and user guidance.",
     h1: "Inverter and Lithium Battery Installation",
     eyebrow: "Backup power systems",
     introduction:
@@ -159,7 +159,7 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
       },
     ],
     areaStatement:
-      "Inverter and lithium battery assessment and installation are available in Ondo City and scheduled serviceable locations in Ondo State.",
+      "Our team is based in Ondo City. For inverter and battery installation in Ondo State, Lagos or another location, request confirmation of assessment availability, travel costs and support arrangements.",
     faqs: [
       {
         question: "Can I add a lithium battery to my present inverter?",
@@ -183,7 +183,7 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
     path: "/cctv-installation-ondo",
     title: "CCTV Installation | G-Tech Consult",
     description:
-      "Protect your Ondo home or business with surveyed CCTV camera placement, recording setup, protected cabling and practical system handover.",
+      "Plan CCTV installation for your home or business with camera placement, recording storage, remote-viewing checks and practical system handover.",
     h1: "CCTV Installation for Homes and Businesses",
     eyebrow: "Security camera installation",
     introduction:
@@ -211,7 +211,7 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
       },
     ],
     areaStatement:
-      "CCTV surveys and installations are available for homes, shops, offices and other suitable properties in Ondo and scheduled nearby locations.",
+      "We assess homes, shops and offices from our Ondo City base. Share your location in Ondo State, Lagos or elsewhere in Nigeria so we can confirm CCTV survey availability and installation logistics.",
     faqs: [
       {
         question: "Can I view my CCTV cameras on my phone?",
@@ -235,7 +235,7 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
     path: "/smart-home-automation",
     title: "Smart Home Automation | G-Tech Consult",
     description:
-      "Control selected lighting, access, appliances and security features with a smart-home solution assessed and installed by G-Tech Consult in Ondo.",
+      "Explore smart-home automation for lighting, access, appliances and security, with compatibility assessment, installation and manual fallback planning.",
     h1: "Smart Home Automation",
     eyebrow: "Practical connected living",
     introduction:
@@ -263,7 +263,7 @@ export const SERVICE_PAGES: readonly ServicePageContent[] = [
       },
     ],
     areaStatement:
-      "Smart-home assessments begin from our Ondo City location, with scheduled installations across serviceable parts of Ondo State.",
+      "Smart-home enquiries are welcome from Ondo State, Lagos and other parts of Nigeria. Our Ondo City team confirms service availability, required site visits and support arrangements for each project.",
     faqs: [
       {
         question: "Can I automate an existing home?",

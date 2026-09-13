@@ -2,7 +2,11 @@ import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { PageHero } from "@/components/site/PageHero";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
-import { BUSINESS, formatPublicHours } from "@/content/business";
+import {
+  BUSINESS,
+  ASSESSMENT_URL,
+  formatPublicHours,
+} from "@/content/business";
 import { SITE_PAGES } from "@/content/sitePages";
 import { SeoHead } from "@/seo/SeoHead";
 import { MapPin, MessageCircle, Phone } from "lucide-react";
@@ -32,7 +36,7 @@ export default function Contact() {
                   <Phone aria-hidden="true" size={17} />
                   {BUSINESS.displayPhone}
                 </a>
-                <a href={BUSINESS.whatsapp}>
+                <a href={ASSESSMENT_URL}>
                   <MessageCircle aria-hidden="true" size={17} />
                   Chat on WhatsApp
                 </a>
@@ -51,8 +55,10 @@ export default function Contact() {
                 tell us the property type, priority areas and features you need.
               </p>
               <p>
-                Final equipment, pricing, logistics and installation timing are
-                confirmed after the project has been assessed.
+                Share your town and state, including Lagos or another location
+                outside Ondo. Service availability, final equipment, pricing,
+                logistics and installation timing are confirmed after the
+                project has been assessed.
               </p>
               <div className="social-row">
                 <a href={BUSINESS.instagram}>Instagram</a>

@@ -94,6 +94,7 @@ function buildOfferCatalogSchema(): JsonLd {
       "@type": "Offer",
       priceCurrency: "NGN",
       price: item.price,
+      url: `${BUSINESS.canonicalOrigin}/solar-packages#${item.slug}`,
       itemOffered: {
         "@type": "Product",
         name: item.title,
