@@ -10,7 +10,7 @@ import { buildPageSchemas } from "@/seo/schema";
 describe("buyer clarity and AI-readable content", () => {
   it("renders all package comparison anchors and inclusions without JavaScript", () => {
     const html = renderToStaticMarkup(
-      createElement(App, { ssrPath: "/solar-packages" })
+      createElement(App, { ssrPath: "/solar-packages/" })
     );
     expect(html).toMatch(/<table\b[^>]*class="comparison-table"/);
     expect(html).toContain('scope="col"');
@@ -44,7 +44,7 @@ describe("buyer clarity and AI-readable content", () => {
     expect(message).toContain("Required backup hours");
   });
   it("links each structured offer to its visible package section", () => {
-    const catalog = buildPageSchemas("/solar-packages").find(
+    const catalog = buildPageSchemas("/solar-packages/").find(
       s => s["@type"] === "OfferCatalog"
     )!;
     expect(

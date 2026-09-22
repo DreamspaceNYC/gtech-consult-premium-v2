@@ -1,6 +1,9 @@
 import { BUSINESS } from "@/content/business";
 import { SOLAR_PACKAGES } from "@/content/packages";
 import { getServiceByPath, SERVICE_PAGES } from "@/content/services";
+
+const publicPath = (path: string) =>
+  path === "/" ? "/" : `${path.replace(/\/+$/, "")}/`;
 import { getRouteSeo, INDEXABLE_PATHS } from "./routes";
 
 export type JsonLd = Record<string, any>;
@@ -57,7 +60,7 @@ export function buildLocalBusinessSchema(): JsonLd {
         itemOffered: {
           "@type": "Service",
           name: service.h1,
-          url: `${BUSINESS.canonicalOrigin}${service.path}`,
+          url: `${BUSINESS.canonicalOrigin}${publicPath(service.path)}`,
         },
       })),
     },
@@ -71,10 +74,10 @@ function buildServiceSchema(path: string): JsonLd | undefined {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
-    "@id": `${BUSINESS.canonicalOrigin}${service.path}#service`,
+    "@id": `${BUSINESS.canonicalOrigin}${publicPath(service.path)}#service`,
     name: service.h1,
     description: service.description,
-    url: `${BUSINESS.canonicalOrigin}${service.path}`,
+    url: `${BUSINESS.canonicalOrigin}${publicPath(service.path)}`,
     provider: { "@id": `${BUSINESS.canonicalOrigin}/#business` },
     areaServed: [
       { "@type": "City", name: "Ondo City" },

@@ -55,7 +55,7 @@ export default function About() {
             </div>
             <div className="service-link-grid">
               {SERVICE_PAGES.map(service => (
-                <a href={service.path} key={service.path}>
+                <a href={`${service.path}/`} key={service.path}>
                   <h3>{service.h1}</h3>
                   <p>{service.description}</p>
                   <span>View service →</span>

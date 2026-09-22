@@ -195,7 +195,7 @@ export default function SolarPackages() {
                   A suitable system can support these appliances, but compressor
                   and pump starting demand matters. Share each appliance’s
                   rating, operating hours and whether they run together. Our{" "}
-                  <a href="/inverter-lithium-battery-installation">
+                  <a href="/inverter-lithium-battery-installation/">
                     inverter and battery assessment
                   </a>{" "}
                   checks simultaneous demand as well as backup energy.
@@ -246,7 +246,7 @@ export default function SolarPackages() {
                   We confirm assessment availability, travel costs, installation
                   scheduling and ongoing support for each location before
                   booking.{" "}
-                  <a href="/solar-installation-ondo-state">
+                  <a href="/solar-installation-ondo-state/">
                     Discuss a custom installation
                   </a>
                   .

@@ -59,7 +59,7 @@ describe("structured local business data", () => {
       '<title data-seo-managed="true">Contact G-Tech Consult</title>'
     );
     expect(head).toContain(
-      '<link data-seo-managed="true" rel="canonical" href="https://gtechconsult.ng/contact">'
+      '<link data-seo-managed="true" rel="canonical" href="https://gtechconsult.ng/contact/">'
     );
     expect(head.match(/name="description"/g)).toHaveLength(1);
     expect(head).not.toContain("gtechconsult.net");

@@ -3,10 +3,10 @@ import { BUSINESS, formatPublicHours } from "@/content/business";
 import { SERVICE_PAGES } from "@/content/services";
 
 const companyLinks = [
-  { href: "/solar-packages", label: "Solar Packages" },
-  { href: "/projects", label: "Projects" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { href: "/solar-packages/", label: "Solar Packages" },
+  { href: "/projects/", label: "Projects" },
+  { href: "/about/", label: "About" },
+  { href: "/contact/", label: "Contact" },
 ] as const;
 
 export function SiteFooter() {
@@ -30,7 +30,7 @@ export function SiteFooter() {
         <div>
           <strong>Services</strong>
           {SERVICE_PAGES.map(service => (
-            <a href={service.path} key={service.path}>
+            <a href={`${service.path}/`} key={service.path}>
               {service.h1}
             </a>
           ))}

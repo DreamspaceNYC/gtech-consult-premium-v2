@@ -3,11 +3,11 @@ import { BUSINESS } from "@/content/business";
 
 const primaryLinks = [
   { href: "/", label: "Home" },
-  { href: "/solar-installation-ondo-city", label: "Solar Installation" },
-  { href: "/solar-packages", label: "Solar Packages" },
-  { href: "/projects", label: "Projects" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { href: "/solar-installation-ondo-city/", label: "Solar Installation" },
+  { href: "/solar-packages/", label: "Solar Packages" },
+  { href: "/projects/", label: "Projects" },
+  { href: "/about/", label: "About" },
+  { href: "/contact/", label: "Contact" },
 ] as const;
 
 export function SiteHeader() {

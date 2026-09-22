@@ -8,6 +8,8 @@ const routes = JSON.parse(
   await readFile(path.join(root, "dist/seo-routes.json"), "utf8")
 );
 const read = p => readFile(path.join(publicDir, p), "utf8");
+const publicUrl = route =>
+  `https://gtechconsult.ng${route === "/" ? "/" : `${route}/`}`;
 const titles = new Set(),
   descriptions = new Set();
 function one(html, regex, label) {
@@ -29,7 +31,7 @@ for (const route of routes) {
     `${route}: canonical`
   );
   one(html, /<h1(?:\s[^>]*)?>/g, `${route}: H1`);
-  assert.equal(canonical, `https://gtechconsult.ng${route}`);
+  assert.equal(canonical, publicUrl(route));
   assert(!titles.has(title), `${route}: duplicate title`);
   titles.add(title);
   assert(!descriptions.has(description), `${route}: duplicate description`);
@@ -55,7 +57,7 @@ assert((await read("404.html")).includes('content="noindex, follow"'));
 const sitemap = await read("sitemap.xml");
 assert.deepEqual(
   [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]),
-  routes.map(r => `https://gtechconsult.ng${r}`)
+  routes.map(publicUrl)
 );
 assert.equal(
   (await read("robots.txt")).trim(),

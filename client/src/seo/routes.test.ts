@@ -27,7 +27,7 @@ describe("canonical business routing", () => {
       { days: "Monday–Saturday", opens: "09:00", closes: "18:00" },
     ]);
     expect(getRouteSeo("/contact").canonical).toBe(
-      "https://gtechconsult.ng/contact"
+      "https://gtechconsult.ng/contact/"
     );
   });
 
@@ -68,9 +68,9 @@ describe("canonical business routing", () => {
       )
     );
 
-    expect(markup).toContain('href="/solar-installation-ondo-city"');
-    expect(markup).toContain('href="/projects"');
-    expect(markup).toContain('href="/contact"');
+    expect(markup).toContain('href="/solar-installation-ondo-city/"');
+    expect(markup).toContain('href="/projects/"');
+    expect(markup).toContain('href="/contact/"');
     expect(markup).toContain(BUSINESS.fullAddress);
     expect(markup).toContain('href="tel:+2348167498489"');
     expect(markup).toContain(BUSINESS.whatsapp);
@@ -126,7 +126,7 @@ describe("canonical business routing", () => {
     expect(projects).toContain("work completed by G-Tech Consult");
     expect(about).toContain("About G-Tech Consult");
     expect(about).toContain("Ondo City");
-    expect(about).toContain('href="/smart-home-automation"');
+    expect(about).toContain('href="/smart-home-automation/"');
     expect(contact).toContain(BUSINESS.fullAddress);
     expect(contact).toContain("Monday–Saturday, 9:00 AM–6:00 PM");
     expect(contact).toContain(BUSINESS.mapsUrl);
@@ -138,7 +138,7 @@ describe("canonical business routing", () => {
     expect(html).toContain("Reliable Power. Smarter Security. Better Living.");
     expect(html.match(/<h1(?:\s|>)/g)).toHaveLength(1);
     for (const path of INDEXABLE_PATHS.filter(path => path !== "/")) {
-      expect(html).toContain(`href="${path}"`);
+      expect(html).toContain(`href="${path}/"`);
     }
     expect(html).toContain(BUSINESS.fullAddress);
     expect(html).toContain("Monday–Saturday, 9:00 AM–6:00 PM");

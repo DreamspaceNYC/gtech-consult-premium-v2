@@ -19,7 +19,7 @@ const indexRobots = "index, follow, max-image-preview:large" as const;
 
 const serviceRoutes: RouteSeo[] = SERVICE_PAGES.map(route => ({
   ...route,
-  canonical: `${BUSINESS.canonicalOrigin}${route.path}`,
+  canonical: `${BUSINESS.canonicalOrigin}${route.path === "/" ? "/" : `${route.path.replace(/\/+$/, "")}/`}`,
   robots: indexRobots,
   image,
 }));
@@ -29,7 +29,7 @@ const staticRoutes: RouteSeo[] = Object.values(SITE_PAGES).map(page => ({
   canonical:
     page.path === "/"
       ? `${BUSINESS.canonicalOrigin}/`
-      : `${BUSINESS.canonicalOrigin}${page.path}`,
+      : `${BUSINESS.canonicalOrigin}${page.path.replace(/\/+$/, "")}/`,
   robots:
     page.path === "/404"
       ? ("noindex, follow" as const)
@@ -38,7 +38,14 @@ const staticRoutes: RouteSeo[] = Object.values(SITE_PAGES).map(page => ({
 }));
 
 const allRoutes = [...staticRoutes, ...serviceRoutes];
-const routeMap = new Map(allRoutes.map(route => [route.path, route]));
+
+const normalizePath = (pathname: string) => {
+  const withoutQuery = pathname.split(/[?#]/, 1)[0] || "/";
+  if (withoutQuery === "/") return "/";
+  return withoutQuery.replace(/\/+$/, "");
+};
+
+const routeMap = new Map(allRoutes.map(route => [normalizePath(route.path), route]));
 const notFound = routeMap.get("/404")!;
 
 export const INDEXABLE_PATHS = [
@@ -53,13 +60,6 @@ export const INDEXABLE_PATHS = [
   "/about",
   "/contact",
 ] as const;
-
-const normalizePath = (pathname: string) => {
-  const withoutQuery = pathname.split(/[?#]/, 1)[0] || "/";
-  if (withoutQuery === "/") return "/";
-  return withoutQuery.replace(/\/+$/, "");
-};
-
 export function getRouteSeo(pathname: string): RouteSeo {
   return routeMap.get(normalizePath(pathname)) ?? notFound;
 }
