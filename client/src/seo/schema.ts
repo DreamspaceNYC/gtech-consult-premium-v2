@@ -1,5 +1,6 @@
 import { BUSINESS } from "@/content/business";
 import { SOLAR_PACKAGES } from "@/content/packages";
+import { PLANNER_FAQS } from "@/content/plannerFaq";
 import { getServiceByPath, SERVICE_PAGES } from "@/content/services";
 
 const publicPath = (path: string) =>
@@ -185,9 +186,30 @@ function buildFaqSchema(path: string): JsonLd | undefined {
   });
 
   if (path === "/solar-packages") return toFaqPage(SOLAR_PACKAGES_FAQS);
+  if (path === "/solar-planner") return toFaqPage(PLANNER_FAQS);
   const service = getServiceByPath(path);
   if (service?.faqs?.length) return toFaqPage(service.faqs);
   return undefined;
+}
+
+function buildSoftwareApplicationSchema(): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": `${BUSINESS.canonicalOrigin}/solar-planner#app`,
+    name: "G-Tech Solar Planner",
+    url: `${BUSINESS.canonicalOrigin}/solar-planner/`,
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Web",
+    description:
+      "Free solar calculator: size your inverter and battery from your appliances and usage times, match a G-Tech Consult package with real prices, and estimate generator payback.",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "NGN",
+    },
+    provider: { "@id": `${BUSINESS.canonicalOrigin}/#business` },
+  };
 }
 
 export function buildPageSchemas(path: string): JsonLd[] {
@@ -198,6 +220,8 @@ export function buildPageSchemas(path: string): JsonLd[] {
   const service = buildServiceSchema(route.path);
   if (service) schemas.push(service);
   if (route.path === "/solar-packages") schemas.push(buildOfferCatalogSchema());
+  if (route.path === "/solar-planner")
+    schemas.push(buildSoftwareApplicationSchema());
   const faq = buildFaqSchema(route.path);
   if (faq) schemas.push(faq);
   if (route.path !== "/" && INDEXABLE_PATHS.includes(route.path as any)) {
