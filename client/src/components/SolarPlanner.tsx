@@ -1,5 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MessageCircle, Minus, Plus, X } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Link2,
+  MessageCircle,
+  Minus,
+  Plus,
+  Share2,
+  X,
+} from "lucide-react";
 import {
   APPLIANCES,
   FUEL_PRICE_PER_LITRE,
@@ -8,21 +17,26 @@ import {
   MAX_QTY,
   SIZE_BANDS,
   buzz,
+  buildPlannerMessage,
   buildPlannerWhatsAppLink,
   computeSavings,
   computeSizing,
+  decodePlan,
   defaultLoadState,
+  encodePlan,
   fmtHour,
   formatNaira,
   fuelToMonthly,
   hoursBetween,
   matchVariants,
   packageBySlug,
+  planShareUrl,
   type Appliance,
   type CustomAppliance,
   type FuelPeriod,
   type LoadState,
   type LoadSelection,
+  type PlanSnapshot,
   type VariantOption,
 } from "@/content/planner";
 import { SOLAR_PACKAGES } from "@/content/packages";
@@ -258,6 +272,8 @@ interface CustomDraft {
   off: number;
   variantIdx: number;
   manualWatts: string;
+  /** True when the user typed exact watts (or a shared plan fixed them). */
+  manual: boolean;
 }
 
 function customOptions(name: string): VariantOption[] {
@@ -265,6 +281,10 @@ function customOptions(name: string): VariantOption[] {
 }
 
 function resolveCustom(d: CustomDraft): { watts: number; label: string } {
+  if (d.manual) {
+    const w = Math.max(0, Math.floor(Number(d.manualWatts) || 0));
+    return { watts: w, label: w > 0 ? `${w}W` : "custom" };
+  }
   const opts = customOptions(d.name);
   const opt = opts[Math.min(d.variantIdx, opts.length - 1)];
   if (opt.watts === -1) {
@@ -284,12 +304,15 @@ function CustomRow({
   onRemove: () => void;
 }) {
   const opts = customOptions(draft.name);
-  const isManual =
-    opts[Math.min(draft.variantIdx, opts.length - 1)].watts === -1;
+  const manualIdx = opts.length - 1;
+  const selectedIdx = Math.min(draft.variantIdx, manualIdx);
+  const isManual = draft.manual || opts[selectedIdx].watts === -1;
   const hrs = hoursBetween(draft.on, draft.off);
 
   const setName = (name: string) => {
-    const before = JSON.stringify((matchVariants(draft.name) ?? []).map(v => v.label));
+    const before = JSON.stringify(
+      (matchVariants(draft.name) ?? []).map(v => v.label),
+    );
     const after = JSON.stringify((matchVariants(name) ?? []).map(v => v.label));
     const reset = before !== after;
     onChange({
@@ -297,6 +320,16 @@ function CustomRow({
       name,
       variantIdx: reset ? 0 : draft.variantIdx,
       manualWatts: reset ? "" : draft.manualWatts,
+      manual: reset ? false : draft.manual,
+    });
+  };
+
+  const setVariantIdx = (idx: number) => {
+    buzz(8);
+    onChange({
+      ...draft,
+      variantIdx: idx,
+      manual: idx === manualIdx ? true : draft.manual,
     });
   };
 
@@ -331,25 +364,24 @@ function CustomRow({
         </div>
       </div>
       <div className="planner-appliance-bottom">
-        <label className="planner-variant">
-          <span className="visually-hidden">Type or size</span>
-          <select
-            value={Math.min(draft.variantIdx, opts.length - 1)}
-            onChange={e => {
-              buzz(8);
-              onChange({ ...draft, variantIdx: Number(e.target.value) });
-            }}
-            aria-label="Type or size"
-          >
-            {opts.map((v, i) => (
-              <option key={i} value={i}>
-                {v.watts === -1
-                  ? v.label
-                  : `${v.label} (~${v.watts.toLocaleString("en-NG")}W)`}
-              </option>
-            ))}
-          </select>
-        </label>
+        {!draft.manual && (
+          <label className="planner-variant">
+            <span className="visually-hidden">Type or size</span>
+            <select
+              value={selectedIdx}
+              onChange={e => setVariantIdx(Number(e.target.value))}
+              aria-label="Type or size"
+            >
+              {opts.map((v, i) => (
+                <option key={i} value={i}>
+                  {v.watts === -1
+                    ? v.label
+                    : `${v.label} (~${v.watts.toLocaleString("en-NG")}W)`}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         {isManual && (
           <label className="planner-manual-watts">
             <span className="visually-hidden">Watts</span>
@@ -363,6 +395,18 @@ function CustomRow({
               aria-label="Watts from the appliance sticker"
             />
             <span className="planner-w">W</span>
+            {draft.manual && draft.name.trim().length > 1 && (
+              <button
+                type="button"
+                className="planner-manual-back"
+                onClick={() => {
+                  buzz(8);
+                  onChange({ ...draft, manual: false, variantIdx: 0 });
+                }}
+              >
+                types ›
+              </button>
+            )}
           </label>
         )}
         <div className="planner-times">
@@ -385,19 +429,130 @@ function CustomRow({
   );
 }
 
+/* ---------- share ---------- */
+
+function SharePlan({
+  load,
+  customs,
+  period,
+  fuelAmount,
+}: {
+  load: LoadState;
+  customs: CustomAppliance[];
+  period: FuelPeriod;
+  fuelAmount: string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const code = encodePlan(load, customs, period, fuelAmount);
+  const url = planShareUrl(code);
+  const text = "I planned my solar with G-Tech Consult — see the size I need:";
+
+  const copyLink = async () => {
+    buzz(10);
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="planner-share">
+      <p className="planner-share-title">
+        <Share2 size={14} /> Share your plan
+      </p>
+      <div className="planner-share-buttons">
+        <a
+          className="planner-share-btn"
+          href={`https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => buzz(10)}
+        >
+          WhatsApp
+        </a>
+        <a
+          className="planner-share-btn"
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => buzz(10)}
+        >
+          Facebook
+        </a>
+        <a
+          className="planner-share-btn"
+          href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => buzz(10)}
+        >
+          X
+        </a>
+        <button
+          type="button"
+          className="planner-share-btn"
+          onClick={copyLink}
+        >
+          {copied ? (
+            <>
+              <Check size={13} /> Copied!
+            </>
+          ) : (
+            <>
+              <Link2 size={13} /> Copy link
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- main section ---------- */
+
+function readSharedPlan(shareable: boolean): PlanSnapshot | null {
+  if (!shareable || typeof window === "undefined") return null;
+  const code = new URLSearchParams(window.location.search).get("plan");
+  return code ? decodePlan(code) : null;
+}
 
 /**
  * "Plan your solar" — step 1 sizes the system from the customer's
  * appliances (with on/off timing and custom entries), step 2 compares
  * the recommended package against generator fuel spending.
+ *
+ * Pass `shareable` on the dedicated /solar-planner page: it hydrates
+ * from ?plan= links and shows share buttons.
  */
-export function SolarPlanner() {
-  const [load, setLoad] = useState<LoadState>(defaultLoadState);
-  const [drafts, setDrafts] = useState<CustomDraft[]>([]);
-  const [period, setPeriod] = useState<FuelPeriod>("monthly");
-  const [fuelAmount, setFuelAmount] = useState("");
+export function SolarPlanner({ shareable = false }: { shareable?: boolean }) {
+  const [shared] = useState<PlanSnapshot | null>(() => readSharedPlan(shareable));
+  const [load, setLoad] = useState<LoadState>(
+    () => shared?.load ?? defaultLoadState(),
+  );
+  const [drafts, setDrafts] = useState<CustomDraft[]>(() =>
+    (shared?.customs ?? []).map(c => ({
+      id: c.id,
+      name: c.name === "Custom appliance" ? "" : c.name,
+      qty: c.qty,
+      on: c.on,
+      off: c.off,
+      variantIdx: 0,
+      manualWatts: String(c.watts),
+      manual: true,
+    })),
+  );
+  const [period, setPeriod] = useState<FuelPeriod>(shared?.period ?? "monthly");
+  const [fuelAmount, setFuelAmount] = useState(shared?.fuelAmount ?? "");
   const [pkgOverride, setPkgOverride] = useState<string>("");
+  const [planCopied, setPlanCopied] = useState(false);
   const idRef = useRef(0);
 
   const customs: CustomAppliance[] = useMemo(
@@ -442,8 +597,35 @@ export function SolarPlanner() {
         off: 17,
         variantIdx: 0,
         manualWatts: "",
+        manual: false,
       },
     ]);
+  };
+
+  const copyPlanText = async () => {
+    if (!sizing.hasLoad || !pkg) return;
+    buzz(10);
+    const text = buildPlannerMessage(
+      load,
+      customs,
+      sizing,
+      pkg,
+      period,
+      fuelNumber,
+      savings,
+    );
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setPlanCopied(true);
+    window.setTimeout(() => setPlanCopied(false), 2000);
   };
 
   const waLink =
@@ -472,6 +654,19 @@ export function SolarPlanner() {
               size the system, match it to a real G-Tech package, and show you
               what it saves you.
             </p>
+            {!shareable && (
+              <p className="planner-open-full">
+                <a href="/solar-planner/">
+                  Open the full solar planner with sharing and FAQs →
+                </a>
+              </p>
+            )}
+            {shared && (
+              <p className="planner-shared-note">
+                You're viewing a shared solar plan — tweak anything and make
+                it yours.
+              </p>
+            )}
           </div>
         </Reveal>
 
@@ -758,15 +953,32 @@ export function SolarPlanner() {
         <Reveal delay={60}>
           <div className="planner-cta">
             {waLink ? (
-              <a
-                className="store-button green"
-                href={waLink}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => buzz(25)}
-              >
-                <MessageCircle size={17} /> Send my plan on WhatsApp
-              </a>
+              <>
+                <a
+                  className="store-button green"
+                  href={waLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => buzz(25)}
+                >
+                  <MessageCircle size={17} /> Send my plan on WhatsApp
+                </a>
+                <button
+                  type="button"
+                  className="planner-copy-btn"
+                  onClick={copyPlanText}
+                >
+                  {planCopied ? (
+                    <>
+                      <Check size={14} /> Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={14} /> Copy my plan
+                    </>
+                  )}
+                </button>
+              </>
             ) : (
               <a
                 className="store-button green"
@@ -779,6 +991,16 @@ export function SolarPlanner() {
               </a>
             )}
           </div>
+          {shareable && sizing.hasLoad && (
+            <Reveal delay={40}>
+              <SharePlan
+                load={load}
+                customs={customs}
+                period={period}
+                fuelAmount={fuelAmount}
+              />
+            </Reveal>
+          )}
         </Reveal>
       </div>
     </section>
