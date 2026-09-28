@@ -496,8 +496,112 @@ function describeSelection(
   if (qty > 0) lines.push(`- ${qty}x ${name}, ${fmtHour(on)}–${fmtHour(off)}`);
 }
 
-/** Builds the pre-filled WhatsApp message carrying the customer's plan. */
-export function buildPlannerWhatsAppLink(
+/* ---------- shareable plans ---------- */
+
+export interface PlanSnapshot {
+  load: LoadState;
+  customs: CustomAppliance[];
+  period: FuelPeriod;
+  fuelAmount: string;
+}
+
+const b64urlEncode = (json: string): string => {
+  const bin = encodeURIComponent(json).replace(
+    /%([0-9A-F]{2})/g,
+    (_, h: string) => String.fromCharCode(parseInt(h, 16)),
+  );
+  return btoa(bin).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+};
+
+const b64urlDecode = (code: string): string => {
+  const b64 = code.replaceAll("-", "+").replaceAll("_", "/");
+  const bin = atob(b64);
+  return decodeURIComponent(
+    Array.from(bin)
+      .map(ch => `%${ch.charCodeAt(0).toString(16).padStart(2, "0")}`)
+      .join(""),
+  );
+};
+
+/** Compact the customer's plan into a URL-safe string for sharing. */
+export function encodePlan(
+  load: LoadState,
+  customs: CustomAppliance[],
+  period: FuelPeriod,
+  fuelAmount: string,
+): string {
+  const compact = {
+    l: APPLIANCES.map(a => {
+      const s = load[a.id];
+      return s && s.qty > 0 ? [s.qty, s.variant, s.on, s.off] : 0;
+    }),
+    c: customs
+      .filter(c => c.qty > 0 && c.watts > 0)
+      .map(c => [c.name, c.watts, c.qty, c.on, c.off]),
+    p: period,
+    f: fuelAmount || "",
+  };
+  return b64urlEncode(JSON.stringify(compact));
+}
+
+/** Restore a plan from a shared URL code. Returns null when invalid. */
+export function decodePlan(code: string): PlanSnapshot | null {
+  try {
+    const raw = JSON.parse(b64urlDecode(code)) as {
+      l?: unknown;
+      c?: unknown;
+      p?: unknown;
+      f?: unknown;
+    };
+    const load = defaultLoadState();
+    if (Array.isArray(raw.l)) {
+      APPLIANCES.forEach((a, i) => {
+        const v = (raw.l as unknown[])[i];
+        if (Array.isArray(v) && Number(v[0]) > 0) {
+          load[a.id] = {
+            qty: Math.min(MAX_QTY, Math.max(0, Number(v[0]) | 0)),
+            variant: Math.min(
+              a.variants.length - 1,
+              Math.max(0, Number(v[1]) | 0),
+            ),
+            on: Math.min(23, Math.max(0, Number(v[2]) | 0)),
+            off: Math.min(23, Math.max(0, Number(v[3]) | 0)),
+          };
+        }
+      });
+    }
+    const customs: CustomAppliance[] = Array.isArray(raw.c)
+      ? (raw.c as unknown[]).slice(0, MAX_CUSTOM).map((c, i) => {
+          const parts = Array.isArray(c) ? c : [];
+          const watts = Math.max(0, Number(parts[1]) || 0);
+          return {
+            id: `shared-${i}`,
+            name: String(parts[0] ?? "Custom appliance").slice(0, 60),
+            variantLabel: `${watts}W`,
+            watts,
+            qty: Math.min(MAX_QTY, Math.max(1, Number(parts[2]) || 1)),
+            on: Math.min(23, Math.max(0, Number(parts[3]) || 0)),
+            off: Math.min(23, Math.max(0, Number(parts[4]) || 0)),
+          };
+        })
+      : [];
+    const period: FuelPeriod =
+      raw.p === "daily" || raw.p === "weekly" || raw.p === "monthly"
+        ? raw.p
+        : "monthly";
+    return { load, customs, period, fuelAmount: String(raw.f ?? "") };
+  } catch {
+    return null;
+  }
+}
+
+/** Canonical share URL for an encoded plan. */
+export function planShareUrl(code: string): string {
+  return `https://gtechconsult.ng/solar-planner/?plan=${code}`;
+}
+
+/** Plain-text summary of the plan, for copy/share (WhatsApp link wraps this). */
+export function buildPlannerMessage(
   load: LoadState,
   customs: CustomAppliance[],
   sizing: SizingResult,
@@ -531,5 +635,27 @@ export function buildPlannerWhatsAppLink(
     );
   }
   lines.push("", "I'd like a free site assessment.");
-  return `${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
+  return lines.join("\n");
+}
+
+/** Builds the pre-filled WhatsApp message carrying the customer's plan. */
+export function buildPlannerWhatsAppLink(
+  load: LoadState,
+  customs: CustomAppliance[],
+  sizing: SizingResult,
+  pkg: SolarPackage,
+  period: FuelPeriod,
+  fuelAmount: number,
+  savings: SavingsResult | null,
+): string {
+  const text = buildPlannerMessage(
+    load,
+    customs,
+    sizing,
+    pkg,
+    period,
+    fuelAmount,
+    savings,
+  );
+  return `${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 }
