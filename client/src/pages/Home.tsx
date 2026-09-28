@@ -255,7 +255,7 @@ export default function Home() {
               </div>
               <div className="hero-product-card">
                 <img
-                  src="/images/gtech-premium-comfort-packshot_3201fbb7.png"
+                  src="/images/gtech-premium-comfort-packshot_3201fbb7.webp"
                   alt="G-Tech Premium Comfort solar package"
                 />
                 <div>
