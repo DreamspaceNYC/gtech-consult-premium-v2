@@ -2161,3 +2161,349 @@ a {
     transition: none;
   }
 }
+/* ---------- Solar planner ---------- */
+.solar-planner {
+  padding: 70px 0;
+  background: #fff;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.planner-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  padding: 26px;
+  margin-bottom: 22px;
+}
+
+.planner-step {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--ink);
+  margin: 0 0 18px;
+  letter-spacing: -0.01em;
+}
+
+.planner-appliances {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+}
+
+.planner-appliance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.planner-appliance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.planner-appliance-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.planner-appliance-watts {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.planner-appliance-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.planner-stepper {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 2px;
+  background: #fff;
+}
+
+.planner-stepper button {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--green-dark);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.planner-stepper button:hover:not(:disabled) {
+  background: #eef5ef;
+}
+
+.planner-stepper button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.planner-stepper span {
+  min-width: 24px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.planner-hours select {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+}
+
+.planner-result {
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+
+.planner-result-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.planner-result-stats > div {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.planner-stat-value {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--green-dark);
+  letter-spacing: -0.02em;
+}
+
+.planner-stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.planner-package {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #b8d8be;
+  border-radius: 6px;
+  padding: 16px 18px;
+}
+
+.planner-package-kicker {
+  margin: 0 0 4px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--green-dark);
+}
+
+.planner-package-name {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.planner-package-spec {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.planner-package-price {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.planner-note {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 10px 0 0;
+}
+
+.planner-hint {
+  margin: 18px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.planner-savings {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin: 0 0 4px;
+}
+
+.planner-savings.positive strong {
+  color: var(--green-dark);
+  font-size: 18px;
+}
+
+/* Step 2 — fuel */
+.planner-fuel-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.planner-periods {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 3px;
+  background: #fff;
+}
+
+.planner-period {
+  border: 0;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.planner-period.active {
+  background: var(--green-dark);
+  color: #fff;
+}
+
+.planner-fuel-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.planner-naira {
+  font-weight: 900;
+  color: var(--green-dark);
+}
+
+.planner-fuel-input input {
+  border: 0;
+  outline: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  width: 140px;
+  background: transparent;
+}
+
+.planner-per {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.planner-package-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  flex-wrap: wrap;
+}
+
+.planner-package-select select {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+  max-width: 100%;
+}
+
+.planner-cta {
+  margin-top: 26px;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .planner-card {
+    padding: 18px;
+  }
+  .planner-appliances {
+    grid-template-columns: 1fr;
+  }
+  .planner-result-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .planner-package {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
