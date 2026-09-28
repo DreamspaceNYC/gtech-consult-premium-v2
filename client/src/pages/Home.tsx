@@ -20,6 +20,7 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { SeoHead } from "@/seo/SeoHead";
 import { HeroSlideshow } from "@/components/HeroSlideshow";
 import { InstallationsGallery } from "@/components/InstallationsGallery";
+import { SolarPlanner } from "@/components/SolarPlanner";
 
 const WHATSAPP = "https://wa.me/2348167498489";
 const categories = ["All", "Solar Installation", "CCTV", "Smart Homes"];
@@ -362,6 +363,7 @@ export default function Home() {
             </div>
           </section>
           <InstallationsGallery />
+          <SolarPlanner />
           <section className="assessment-banner">
             <div className="container assessment-inner">
               <div>
