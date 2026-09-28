@@ -42,8 +42,8 @@ export function InstallationsGallery() {
           <p className="page-eyebrow">Our work</p>
           <h2 id="gallery-heading">Recent installations</h2>
           <p className="gallery-sub">
-            Real G-Tech Consult job sites across Ondo, Lagos and beyond — solar,
-            inverter, battery, CCTV and smart-home work, photographed as it happened.
+            Real G-Tech Consult job sites — solar panels, inverters and battery
+            installations, photographed as they happened.
           </p>
         </div>
         <div className="gallery-grid">
