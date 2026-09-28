@@ -56,6 +56,7 @@ export const INDEXABLE_PATHS = [
   "/cctv-installation-ondo",
   "/smart-home-automation",
   "/solar-packages",
+  "/solar-planner",
   "/projects",
   "/about",
   "/contact",
