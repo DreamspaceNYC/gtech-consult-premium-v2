@@ -18,6 +18,8 @@ import { SERVICE_PAGES } from "@/content/services";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SeoHead } from "@/seo/SeoHead";
+import { HeroSlideshow } from "@/components/HeroSlideshow";
+import { InstallationsGallery } from "@/components/InstallationsGallery";
 
 const WHATSAPP = "https://wa.me/2348167498489";
 const categories = ["All", "Solar Installation", "CCTV", "Smart Homes"];
@@ -233,7 +235,8 @@ export default function Home() {
         </main>
       ) : (
         <main id="main-content">
-          <section id="top" className="store-hero">
+          <section id="top" className="store-hero store-hero--photos">
+            <HeroSlideshow />
             <div className="container store-hero-inner">
               <div className="hero-copy-store">
                 <p className="store-kicker">G-Tech Consult</p>
@@ -358,6 +361,7 @@ export default function Home() {
               </div>
             </div>
           </section>
+          <InstallationsGallery />
           <section className="assessment-banner">
             <div className="container assessment-inner">
               <div>
