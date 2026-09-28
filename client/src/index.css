@@ -2507,3 +2507,252 @@ a {
     align-items: flex-start;
   }
 }
+
+/* ---------- v2: timing, custom rows, motion, haptics ---------- */
+
+/* Scroll entrance */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.22, 0.9, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Appliance rows: two-line layout */
+.planner-appliance {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+.planner-appliance-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.planner-appliance-bottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.planner-variant {
+  flex: 1 1 150px;
+  min-width: 0;
+}
+.planner-variant select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+}
+.planner-times {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.planner-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.planner-time-tag {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+}
+.planner-time select {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+}
+.planner-hours-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--green-dark);
+  background: #eef5ef;
+  border-radius: 12px;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+/* Press feedback */
+.planner-stepper button:active:not(:disabled),
+.planner-period:active,
+.planner-add:active {
+  transform: scale(0.92);
+}
+.planner-stepper button,
+.planner-period,
+.planner-add {
+  transition: transform 0.12s ease;
+}
+
+/* Custom appliance rows */
+.planner-custom {
+  border-style: dashed;
+  border-color: #b8d8be;
+  animation: planner-row-in 0.45s cubic-bezier(0.22, 0.9, 0.3, 1.2);
+}
+@keyframes planner-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.planner-custom-name {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  background: #fff;
+  outline: none;
+}
+.planner-custom-name:focus {
+  border-color: var(--green-dark);
+}
+.planner-custom-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.planner-remove {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+  color: #9ca3af;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease, color 0.15s ease;
+}
+.planner-remove:hover {
+  color: #dc2626;
+}
+.planner-remove:active {
+  transform: scale(0.9);
+}
+.planner-manual-watts {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+.planner-manual-watts input {
+  border: 0;
+  outline: 0;
+  width: 70px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  background: transparent;
+}
+.planner-w {
+  font-size: 12px;
+  font-weight: 800;
+  color: #6b7280;
+}
+.planner-add {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px dashed #b8d8be;
+  background: #fff;
+  color: var(--green-dark);
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.planner-add:hover {
+  background: #f4faf4;
+}
+
+/* Package card entrance */
+.planner-package {
+  animation: planner-pop 0.55s cubic-bezier(0.22, 0.9, 0.3, 1.25);
+}
+@keyframes planner-pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Five stats now — flexible grid */
+.planner-result-stats {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+/* Stat value transition smoothness */
+.planner-stat-value {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .planner-appliance-bottom {
+    gap: 6px;
+  }
+  .planner-times {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Respect reduced motion: content is fully visible, no animation */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .planner-custom,
+  .planner-package {
+    animation: none;
+  }
+  .planner-stepper button,
+  .planner-period,
+  .planner-add,
+  .planner-remove {
+    transition: none;
+  }
+}
