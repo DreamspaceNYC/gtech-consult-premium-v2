@@ -1,0 +1,185 @@
+/* Solar packages page — comparison table, animated card grid, toast.
+   Tokens: greens #20a653 / #118541, ink #111714, gold #F2A900 sparingly. */
+
+.pkg-page .pkg-compare-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(17, 23, 20, 0.09);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 18px 40px -28px rgba(17, 23, 20, 0.25);
+}
+
+.comparison-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.comparison-table caption {
+  text-align: left;
+  padding: 16px 20px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #738078;
+}
+
+.comparison-table thead th {
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #118541;
+  padding: 12px 16px;
+  background: rgba(32, 166, 83, 0.07);
+  border-bottom: 1px solid rgba(17, 23, 20, 0.09);
+  white-space: nowrap;
+}
+
+.comparison-table tbody th,
+.comparison-table tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(17, 23, 20, 0.07);
+  vertical-align: top;
+  text-align: left;
+}
+
+.comparison-table tbody tr:last-child th,
+.comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.comparison-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.comparison-table tbody tr:hover {
+  background: rgba(32, 166, 83, 0.05);
+}
+
+.comparison-table tbody th {
+  font-weight: 700;
+  color: #111714;
+  min-width: 170px;
+  position: sticky;
+  left: 0;
+  background: #fff;
+}
+
+.comparison-table tbody tr:hover th {
+  background: rgba(247, 250, 247, 0.98);
+}
+
+.comparison-table tbody th a {
+  color: #118541;
+}
+
+.comparison-table tbody th a:hover {
+  text-decoration: underline;
+}
+
+.comparison-table td {
+  color: #4d5850;
+}
+
+.comparison-table td:last-child {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  color: #118541;
+  white-space: nowrap;
+}
+
+.pkg-note {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #738078;
+}
+
+.pkg-section-band {
+  background:
+    radial-gradient(600px 220px at 12% 0%, rgba(32, 166, 83, 0.08), transparent 60%),
+    radial-gradient(520px 200px at 88% 10%, rgba(242, 169, 0, 0.05), transparent 60%),
+    #fff;
+}
+
+.pkg-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+
+.pkg-grid-item {
+  min-width: 0;
+  display: flex;
+}
+
+.pkg-grid-item .gt-card {
+  height: 100%;
+  scroll-margin-top: 100px;
+}
+
+.pkg-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: #738078;
+  font-size: 14.5px;
+  border: 1px dashed rgba(17, 23, 20, 0.2);
+  border-radius: 16px;
+}
+
+.pkg-count-line {
+  margin: 18px 0 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #738078;
+}
+
+.pkg-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #111714;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 13px 20px;
+  border-radius: 999px;
+  box-shadow: 0 16px 32px -12px rgba(17, 23, 20, 0.55);
+  white-space: nowrap;
+}
+
+.pkg-toast .pkg-toast-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #20a653;
+}
+
+@media (min-width: 720px) {
+  .pkg-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .pkg-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comparison-table tbody tr {
+    transition: none;
+  }
+}

@@ -1,0 +1,90 @@
+/* Co-located styles for ShimmerButton (adapted Magic UI component).
+   Decorative shine sweep only; layout/typography stay with the consumer's
+   className so the component composes with existing site classes. */
+.gtr-shimmer-button {
+  position: relative;
+  z-index: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  border-radius: var(--shimmer-radius);
+  background: var(--shimmer-bg);
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  color: #fff;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.gtr-shimmer-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  background: var(--shimmer-bg);
+}
+
+.gtr-shimmer-button::after {
+  content: "";
+  position: absolute;
+  inset: calc(var(--shimmer-size) * -1);
+  z-index: -1;
+  border-radius: inherit;
+  padding: var(--shimmer-size);
+  background: conic-gradient(
+    from var(--shimmer-angle, 0deg),
+    transparent 0 340deg,
+    var(--shimmer-color) 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: gtr-shimmer-spin var(--shimmer-duration) linear infinite;
+}
+
+.gtr-shimmer-button__inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: inherit;
+  padding: 0.75em 1.75em;
+  color: #fff;
+  font-weight: 700;
+}
+
+.gtr-shimmer-button:hover {
+  transform: translateY(-2px);
+}
+
+@property --shimmer-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes gtr-shimmer-spin {
+  to {
+    --shimmer-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gtr-shimmer-button::after {
+    animation: none;
+  }
+  .gtr-shimmer-button {
+    transition: none;
+  }
+}

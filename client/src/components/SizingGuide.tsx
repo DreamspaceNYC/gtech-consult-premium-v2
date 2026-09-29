@@ -1,4 +1,14 @@
+import {
+  BatteryCharging,
+  Building2,
+  Gauge,
+  ListChecks,
+  PlugZap,
+  ReceiptText,
+} from "lucide-react";
 import { Link } from "wouter";
+import "../inner-pages.css";
+import { AnimatedList, BlurText } from "@/components/reactbits";
 
 /**
  * Visible sizing guide on the /solar-planner page.
@@ -9,18 +19,27 @@ export function SizingGuide() {
   return (
     <section className="content-section" aria-labelledby="sizing-guide-heading">
       <div className="container">
-        <div className="section-heading">
-          <p className="page-eyebrow">Sizing guide</p>
-          <h2 id="sizing-guide-heading">
-            How to calculate solar inverter size in Nigeria
-          </h2>
-          <p>
+        <div className="gt-section-head">
+          <p className="gt-eyebrow">Sizing guide</p>
+          <BlurText
+            as="h2"
+            id="sizing-guide-heading"
+            className="gt-h2"
+            text="How to calculate solar inverter size in Nigeria"
+          />
+          <p className="gt-sub">
             The exact method our installers use — and the same maths the
             planner above runs automatically.
           </p>
         </div>
-        <div className="guide-grid">
-          <article className="guide-card">
+        <AnimatedList className="gt-grid-2" stagger={0.09}>
+          <article className="gt-card">
+            <div className="gt-card-top">
+              <span className="gt-icon-chip">
+                <ListChecks size={21} aria-hidden="true" />
+              </span>
+              <span className="gt-num">01</span>
+            </div>
             <h3>Step 1 — List your loads in watts</h3>
             <p>
               Write down every appliance, its watt rating from the nameplate,
@@ -29,7 +48,13 @@ export function SizingGuide() {
               all up and you have your daily energy need in kWh.
             </p>
           </article>
-          <article className="guide-card">
+          <article className="gt-card">
+            <div className="gt-card-top">
+              <span className="gt-icon-chip">
+                <Gauge size={21} aria-hidden="true" />
+              </span>
+              <span className="gt-num">02</span>
+            </div>
             <h3>Step 2 — Find your peak load</h3>
             <p>
               Your inverter must handle the highest total watts running at any
@@ -38,7 +63,13 @@ export function SizingGuide() {
               to five times their rated watts for a few seconds when starting.
             </p>
           </article>
-          <article className="guide-card">
+          <article className="gt-card">
+            <div className="gt-card-top">
+              <span className="gt-icon-chip">
+                <PlugZap size={21} aria-hidden="true" />
+              </span>
+              <span className="gt-num">03</span>
+            </div>
             <h3>kVA vs kW: the Nigerian convention</h3>
             <p>
               Nigeria rates inverters in kVA. Roughly, kW = kVA × 0.8, so a
@@ -47,7 +78,13 @@ export function SizingGuide() {
               Ondo, always confirm whether each figure is kVA or kW.
             </p>
           </article>
-          <article className="guide-card">
+          <article className="gt-card">
+            <div className="gt-card-top">
+              <span className="gt-icon-chip">
+                <BatteryCharging size={21} aria-hidden="true" />
+              </span>
+              <span className="gt-num">04</span>
+            </div>
             <h3>Sizing the battery from night-time use</h3>
             <p>
               Panels only produce in daylight, so your battery must carry
@@ -57,7 +94,13 @@ export function SizingGuide() {
               and it weights the battery accordingly.
             </p>
           </article>
-          <article className="guide-card">
+          <article className="gt-card">
+            <div className="gt-card-top">
+              <span className="gt-icon-chip">
+                <ReceiptText size={21} aria-hidden="true" />
+              </span>
+              <span className="gt-num">05</span>
+            </div>
             <h3>Sizing from your electricity bill</h3>
             <p>
               No appliance list handy? Divide your monthly kWh by 30 for
@@ -67,7 +110,13 @@ export function SizingGuide() {
               the full picture.
             </p>
           </article>
-          <article className="guide-card">
+          <article className="gt-card">
+            <div className="gt-card-top">
+              <span className="gt-icon-chip">
+                <Building2 size={21} aria-hidden="true" />
+              </span>
+              <span className="gt-num">06</span>
+            </div>
             <h3>Businesses and 3-phase loads</h3>
             <p>
               Shops, offices, hotels and factories follow the same steps at
@@ -80,7 +129,7 @@ export function SizingGuide() {
               for the full business process.
             </p>
           </article>
-        </div>
+        </AnimatedList>
       </div>
     </section>
   );

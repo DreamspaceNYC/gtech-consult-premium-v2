@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import "../inner-pages.css";
 import {
   Check,
   Copy,

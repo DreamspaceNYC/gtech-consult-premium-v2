@@ -1,20 +1,103 @@
+import { useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { ContactCta } from "@/components/site/ContactCta";
+import { PackageCard } from "@/components/packages/PackageCard";
+import {
+  PackageFilters,
+  type PackageFilter,
+} from "@/components/packages/PackageFilters";
 import { PageHero } from "@/components/site/PageHero";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
-import { BUSINESS } from "@/content/business";
-import { SOLAR_PACKAGES } from "@/content/packages";
+import { SOLAR_PACKAGES, type SolarPackage } from "@/content/packages";
 import { SITE_PAGES } from "@/content/sitePages";
 import { SeoHead } from "@/seo/SeoHead";
+import "./SolarPackages.css";
 
 const formatNaira = (amount: number) => `₦${amount.toLocaleString("en-NG")}`;
 
+/* Spring constants reused from the 21st animated filter grid. */
+const CELL = {
+  type: "spring",
+  stiffness: 520,
+  damping: 34,
+  mass: 0.45,
+} as const;
+const MOVE = {
+  type: "spring",
+  stiffness: 260,
+  damping: 34,
+  mass: 0.8,
+} as const;
+const EASE = [0.23, 1, 0.32, 1] as const;
+const LEAVE = { duration: 0.14, ease: [0.4, 0, 1, 1] } as const;
+const INSTANT = { duration: 0 } as const;
+
+type PriceFilter = PackageFilter & {
+  match: (item: SolarPackage) => boolean;
+};
+
+const PRICE_FILTERS: PriceFilter[] = [
+  { id: "all", label: "All packages", match: () => true },
+  {
+    id: "under-2m",
+    label: "Under ₦2M",
+    match: item => item.price < 2000000,
+  },
+  {
+    id: "mid",
+    label: "₦2M – ₦7M",
+    match: item => item.price >= 2000000 && item.price <= 7000000,
+  },
+  {
+    id: "premium",
+    label: "Above ₦7M",
+    match: item => item.price > 7000000,
+  },
+];
+
 export default function SolarPackages() {
   const page = SITE_PAGES.solarPackages;
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [cart, setCart] = useState<SolarPackage[]>([]);
+  const [toast, setToast] = useState("");
+  const toastTimer = useRef<number | undefined>(undefined);
+  const reduced = useReducedMotion();
+
+  const counts = useMemo(() => {
+    const next: Record<string, number> = {};
+    for (const filter of PRICE_FILTERS) {
+      next[filter.id] = SOLAR_PACKAGES.filter(item => filter.match(item)).length;
+    }
+    return next;
+  }, []);
+
+  const visible = useMemo(() => {
+    const filter = PRICE_FILTERS.find(f => f.id === activeFilter);
+    if (!filter) return SOLAR_PACKAGES;
+    return SOLAR_PACKAGES.filter(item => filter.match(item));
+  }, [activeFilter]);
+
+  const addToCart = (item: SolarPackage) => {
+    setCart(current => [...current, item]);
+    setToast(`${item.shortTitle} added to cart`);
+    window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(""), 2400);
+  };
+
+  const viewDetails = (item: SolarPackage) => {
+    document
+      .getElementById(item.slug)
+      ?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  };
+
+  const swap = reduced ? INSTANT : CELL;
+  const step = reduced ? INSTANT : { layout: MOVE, duration: 0.2, ease: EASE };
+  const leave = reduced ? INSTANT : LEAVE;
 
   return (
-    <div className="site-page">
+    <div className="site-page pkg-page">
       <SeoHead path={page.path} />
       <SiteHeader />
       <main id="main-content">
@@ -36,7 +119,7 @@ export default function SolarPackages() {
               </p>
             </div>
             <div
-              className="comparison-scroll"
+              className="pkg-compare-wrap"
               role="region"
               aria-label="Solar package comparison"
               tabIndex={0}
@@ -70,90 +153,72 @@ export default function SolarPackages() {
                 </tbody>
               </table>
             </div>
-            <p className="package-note">
+            <p className="pkg-note">
               For Premium Comfort, confirm total battery capacity and quantity
               in your quotation. For Power Tank, confirm continuous output,
               surge rating and usable battery capacity before choosing loads.
             </p>
           </div>
         </section>
-        <section className="content-section">
-          <div className="container package-list">
-            {SOLAR_PACKAGES.map(item => (
-              <article
-                className="package-list-card"
-                data-package={item.slug}
-                id={item.slug}
-                key={item.slug}
-              >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  width="640"
-                  height="480"
-                  loading="lazy"
-                />
-                <div>
-                  <p className="page-eyebrow">{item.badge ?? item.category}</p>
-                  <h2>{item.title}</h2>
-                  <p>{item.description}</p>
-                  <dl className="package-specs">
-                    <div>
-                      <dt>System</dt>
-                      <dd>{item.system}</dd>
-                    </div>
-                    <div>
-                      <dt>Battery</dt>
-                      <dd>{item.battery}</dd>
-                    </div>
-                    <div>
-                      <dt>Panels</dt>
-                      <dd>{item.panels}</dd>
-                    </div>
-                  </dl>
-                  <h3>Designed to power</h3>
-                  <ul>
-                    {item.powers.map(power => (
-                      <li key={power}>{power}</li>
-                    ))}
-                  </ul>
-                  {item.notes?.map(note => (
-                    <p className="package-note" key={note}>
-                      {note}
-                    </p>
-                  ))}
-                  <details className="package-inclusions">
-                    <summary>Equipment and installation inclusions</summary>
-                    <ul>
-                      {item.items.map(part => (
-                        <li key={part.name}>
-                          {part.name}: {part.spec} (quantity: {part.qty})
-                        </li>
-                      ))}
-                    </ul>
-                    <ul>
-                      {item.inclusions.map(inclusion => (
-                        <li key={inclusion}>{inclusion}</li>
-                      ))}
-                    </ul>
-                  </details>
-                  <p className="package-price">{formatNaira(item.price)}</p>
-                  <p className="package-note">
-                    Final sizing and installation scope are confirmed after
-                    assessment. Runtime depends on actual load and operating
-                    conditions.
-                  </p>
-                  <a
-                    className="store-button green"
-                    href={`${BUSINESS.whatsapp}?text=${encodeURIComponent(
-                      `Hello G-Tech Consult, I am interested in the ${item.title}. My town/state: __. Appliances: __. Required backup hours: __. Please confirm availability and arrange an assessment.`
-                    )}`}
+        <section className="content-section pkg-section-band">
+          <div className="container">
+            <div className="section-heading">
+              <p className="page-eyebrow">Browse by budget</p>
+              <h2>Solar packages</h2>
+              <p>
+                Filter by price to shortlist, then add a package to your cart
+                or ask about it on WhatsApp. Final sizing and installation
+                scope are confirmed after assessment.
+              </p>
+            </div>
+            <PackageFilters
+              filters={PRICE_FILTERS}
+              activeId={activeFilter}
+              onChange={setActiveFilter}
+              counts={counts}
+            />
+            <p className="pkg-count-line" aria-live="polite">
+              Showing {visible.length} of {SOLAR_PACKAGES.length} packages
+              {cart.length > 0 &&
+                ` · ${cart.length} in cart (${formatNaira(
+                  cart.reduce((sum, item) => sum + item.price, 0)
+                )})`}
+            </p>
+            <motion.div layout={reduced ? false : true} className="pkg-grid">
+              <AnimatePresence initial={false} mode="popLayout">
+                {visible.map(item => (
+                  <motion.div
+                    key={item.slug}
+                    layout={reduced ? false : "position"}
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98, transition: leave }}
+                    transition={step}
+                    className="pkg-grid-item"
                   >
-                    Ask about this package
-                  </a>
-                </div>
-              </article>
-            ))}
+                    <PackageCard
+                      item={item}
+                      onAdd={addToCart}
+                      onView={viewDetails}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+            <AnimatePresence initial={false}>
+              {visible.length === 0 && (
+                <motion.p
+                  key="empty"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0, transition: leave }}
+                  transition={swap}
+                  className="pkg-empty"
+                >
+                  No packages match this price filter. Try another range.
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
         </section>
         <section className="content-section content-section-soft">
@@ -258,6 +323,22 @@ export default function SolarPackages() {
         <ContactCta />
       </main>
       <SiteFooter />
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            key="cart-toast"
+            role="status"
+            className="pkg-toast"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={reduced ? INSTANT : { duration: 0.2 }}
+          >
+            <span className="pkg-toast-dot" aria-hidden="true" />
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

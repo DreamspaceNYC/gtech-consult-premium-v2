@@ -1,10 +1,42 @@
+import {
+  BadgeCheck,
+  ClipboardCheck,
+  MapPin,
+  PenTool,
+  Plus,
+  ShieldCheck,
+  Wrench,
+  Zap,
+} from "lucide-react";
+import "../inner-pages.css";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { ContactCta } from "@/components/site/ContactCta";
 import { PageHero } from "@/components/site/PageHero";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { GridPattern } from "@/components/magicui";
+import {
+  AnimatedList,
+  BlurText,
+  CountUp,
+} from "@/components/reactbits";
 import { getServiceByPath } from "@/content/services";
+import { CATALOG_PRODUCTS } from "@/content/catalog";
+import { CatalogCard } from "@/components/catalog/CatalogCard";
 import { SeoHead } from "@/seo/SeoHead";
+
+const BENEFIT_ICONS = [BadgeCheck, Zap, ShieldCheck] as const;
+const PROCESS_ICONS = [ClipboardCheck, PenTool, Wrench] as const;
+const IS_CCTV = (path: string) => path === "/cctv-installation-ondo";
+const CCTV_CAMERA_SLUGS = [
+  "dome-cameras",
+  "bullet-cameras",
+  "ptz-cameras",
+  "solar-4g-cameras",
+  "wifi-cameras",
+  "video-doorbells",
+];
+const CCTV_CAMERAS = CATALOG_PRODUCTS.filter(p => CCTV_CAMERA_SLUGS.includes(p.slug));
 
 export default function ServicePage({ path }: { path: string }) {
   const service = getServiceByPath(path);
@@ -16,61 +48,149 @@ export default function ServicePage({ path }: { path: string }) {
       <SiteHeader />
       <main id="main-content">
         <Breadcrumbs path={service.path} />
-        <PageHero
-          eyebrow={service.eyebrow}
-          title={service.h1}
-          description={service.introduction}
-        />
+        <div className="inner-hero-wrap">
+          <GridPattern
+            className="inner-hero-pattern"
+            squares={[
+              [14, 2],
+              [15, 2],
+              [14, 3],
+            ]}
+          />
+          <div className="inner-hero-glow" aria-hidden="true" />
+          <PageHero
+            eyebrow={service.eyebrow}
+            title={service.h1}
+            description={service.introduction}
+          />
+        </div>
+
         <section className="content-section">
           <div className="container">
-            <div className="section-heading">
-              <p className="page-eyebrow">What the service includes</p>
-              <h2>A system planned around the property and its real needs</h2>
+            <div className="gt-section-head">
+              <p className="gt-eyebrow">What the service includes</p>
+              <BlurText
+                as="h2"
+                className="gt-h2"
+                text="A system planned around the property and its real needs"
+              />
             </div>
-            <div className="service-grid">
-              {service.benefits.map((benefit, index) => (
-                <article className="content-card" key={benefit}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <p>{benefit}</p>
-                </article>
-              ))}
-            </div>
+            <AnimatedList className="gt-grid-3" stagger={0.1}>
+              {service.benefits.map((benefit, index) => {
+                const Icon = BENEFIT_ICONS[index % BENEFIT_ICONS.length];
+                return (
+                  <article className="gt-card" key={benefit}>
+                    <div className="gt-card-top">
+                      <span className="gt-icon-chip">
+                        <Icon size={21} aria-hidden="true" />
+                      </span>
+                      <span className="gt-num">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                    <p>{benefit}</p>
+                  </article>
+                );
+              })}
+            </AnimatedList>
           </div>
         </section>
+
+        {IS_CCTV(path) && (
+          <section className="content-section" aria-label="Camera types">
+            <div className="container">
+              <div className="gt-section-head">
+                <p className="gt-eyebrow">Cameras we install</p>
+                <BlurText
+                  as="h2"
+                  className="gt-h2"
+                  text="Six camera types, matched to the property"
+                />
+                <p>
+                  Every camera below is installed and configured by our team.
+                  Enquire on WhatsApp for details and pricing.
+                </p>
+              </div>
+              <AnimatedList className="gt-grid-3" stagger={0.08}>
+                {CCTV_CAMERAS.map(camera => (
+                  <CatalogCard key={camera.slug} item={camera} />
+                ))}
+              </AnimatedList>
+            </div>
+          </section>
+        )}
+
         <section className="content-section content-section-soft">
           <div className="container">
-            <div className="section-heading">
-              <p className="page-eyebrow">From assessment to handover</p>
-              <h2>Our installation process</h2>
+            <div className="gt-section-head">
+              <p className="gt-eyebrow">From assessment to handover</p>              <BlurText
+                as="h2"
+                className="gt-h2"
+                text="Our installation process"
+              />
+              <p className="gt-count-pill">
+                <CountUp end={service.process.length} />
+                steps, one accountable team
+              </p>
             </div>
-            <div className="service-grid">
-              {service.process.map((step, index) => (
-                <article className="process-card" key={step.title}>
-                  <span>Step {index + 1}</span>
-                  <h3>{step.title}</h3>
-                  <p>{step.description}</p>
-                </article>
-              ))}
+            <AnimatedList className="gt-grid-3" stagger={0.12}>
+              {service.process.map((step, index) => {
+                const Icon = PROCESS_ICONS[index % PROCESS_ICONS.length];
+                return (
+                  <article className="gt-card gt-step-card" key={step.title}>
+                    <span
+                      className="gt-step-ghost"
+                      aria-hidden="true"
+                    >
+                      {index + 1}
+                    </span>
+                    <div className="gt-card-top">
+                      <span className="gt-icon-chip">
+                        <Icon size={21} aria-hidden="true" />
+                      </span>
+                      <span className="gt-step-tag">Step {index + 1}</span>
+                    </div>
+                    <h3>{step.title}</h3>
+                    <p>{step.description}</p>
+                  </article>
+                );
+              })}
+            </AnimatedList>
+            <div className="gt-area">
+              <MapPin size={19} aria-hidden="true" />
+              <p>{service.areaStatement}</p>
             </div>
-            <p className="area-statement">{service.areaStatement}</p>
           </div>
         </section>
+
         <section className="content-section">
           <div className="container content-narrow">
-            <div className="section-heading">
-              <p className="page-eyebrow">Useful answers</p>
-              <h2>Frequently asked questions</h2>
+            <div className="gt-section-head">
+              <p className="gt-eyebrow">Useful answers</p>
+              <BlurText
+                as="h2"
+                className="gt-h2"
+                text="Frequently asked questions"
+              />
             </div>
-            <div className="faq-list">
+            <AnimatedList className="gt-faq" stagger={0.05} y={14}>
               {service.faqs.map(faq => (
                 <details key={faq.question}>
-                  <summary>{faq.question}</summary>
+                  <summary>
+                    <span>{faq.question}</span>
+                    <Plus
+                      size={15}
+                      aria-hidden="true"
+                      className="gt-faq-icon"
+                    />
+                  </summary>
                   <p>{faq.answer}</p>
                 </details>
               ))}
-            </div>
+            </AnimatedList>
           </div>
         </section>
+
         <ContactCta heading={service.cta} />
       </main>
       <SiteFooter />

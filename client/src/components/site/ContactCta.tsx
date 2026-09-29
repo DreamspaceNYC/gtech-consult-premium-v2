@@ -7,18 +7,18 @@ export function ContactCta({
   heading?: string;
 }) {
   return (
-    <section className="contact-cta">
-      <div className="container contact-cta-inner">
+    <section className="contact-cta section-pad">
+      <div className="container contact-cta-inner glass">
         <div>
           <p className="page-eyebrow">Talk to G-Tech Consult</p>
-          <h2>{heading}</h2>
+          <h2 className="text-balance">{heading}</h2>
           <p>
             Tell us what you want to power, secure or automate. We’ll confirm
             the next assessment step.
           </p>
         </div>
         <div className="contact-cta-actions">
-          <a className="store-button green" href={ASSESSMENT_URL}>
+          <a className="btn-gold" href={ASSESSMENT_URL}>
             <MessageCircle aria-hidden="true" size={16} />
             Chat on WhatsApp
           </a>
