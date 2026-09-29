@@ -21,10 +21,22 @@ import {
   CountUp,
 } from "@/components/reactbits";
 import { getServiceByPath } from "@/content/services";
+import { CATALOG_PRODUCTS } from "@/content/catalog";
+import { CatalogCard } from "@/components/catalog/CatalogCard";
 import { SeoHead } from "@/seo/SeoHead";
 
 const BENEFIT_ICONS = [BadgeCheck, Zap, ShieldCheck] as const;
 const PROCESS_ICONS = [ClipboardCheck, PenTool, Wrench] as const;
+const IS_CCTV = (path: string) => path === "/cctv-installation-ondo";
+const CCTV_CAMERA_SLUGS = [
+  "dome-cameras",
+  "bullet-cameras",
+  "ptz-cameras",
+  "solar-4g-cameras",
+  "wifi-cameras",
+  "video-doorbells",
+];
+const CCTV_CAMERAS = CATALOG_PRODUCTS.filter(p => CCTV_CAMERA_SLUGS.includes(p.slug));
 
 export default function ServicePage({ path }: { path: string }) {
   const service = getServiceByPath(path);
@@ -84,11 +96,34 @@ export default function ServicePage({ path }: { path: string }) {
           </div>
         </section>
 
+        {IS_CCTV(path) && (
+          <section className="content-section" aria-label="Camera types">
+            <div className="container">
+              <div className="gt-section-head">
+                <p className="gt-eyebrow">Cameras we install</p>
+                <BlurText
+                  as="h2"
+                  className="gt-h2"
+                  text="Six camera types, matched to the property"
+                />
+                <p>
+                  Every camera below is installed and configured by our team.
+                  Enquire on WhatsApp for details and pricing.
+                </p>
+              </div>
+              <AnimatedList className="gt-grid-3" stagger={0.08}>
+                {CCTV_CAMERAS.map(camera => (
+                  <CatalogCard key={camera.slug} item={camera} />
+                ))}
+              </AnimatedList>
+            </div>
+          </section>
+        )}
+
         <section className="content-section content-section-soft">
           <div className="container">
             <div className="gt-section-head">
-              <p className="gt-eyebrow">From assessment to handover</p>
-              <BlurText
+              <p className="gt-eyebrow">From assessment to handover</p>              <BlurText
                 as="h2"
                 className="gt-h2"
                 text="Our installation process"

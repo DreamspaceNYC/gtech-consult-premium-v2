@@ -29,6 +29,15 @@ import { SolarPlanner } from "@/components/SolarPlanner";
 // Shop components, built by a sibling builder.
 import { PackageCard } from "@/components/packages/PackageCard";
 import { PackageFilters } from "@/components/packages/PackageFilters";
+// Product catalog (enquiry-only, no prices).
+import { CatalogCard } from "@/components/catalog/CatalogCard";
+import { ServiceCard } from "@/components/catalog/ServiceCard";
+import {
+  CATALOG_FAMILIES,
+  CATALOG_PRODUCTS,
+  CATALOG_SERVICES,
+  productsByFamily,
+} from "@/content/catalog";
 // Copied, keyless component sources (Magic UI + React Bits).
 import { Marquee } from "@/components/magicui/marquee";
 import { ShimmerButton } from "@/components/magicui";
@@ -167,6 +176,8 @@ function DetailPage({
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [shopTab, setShopTab] = useState<"packages" | "catalog">("packages");
+  const [activeFamily, setActiveFamily] = useState("All");
   const [selected, setSelected] = useState<Package | null>(null);
   const [cart, setCart] = useState<Package[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -185,6 +196,21 @@ export default function Home() {
     for (const category of categories.slice(1)) {
       result[category] = packages.filter(
         item => item.category === category,
+      ).length;
+    }
+    return result;
+  }, []);
+
+  const catalogFiltered = useMemo(
+    () => productsByFamily(activeFamily),
+    [activeFamily]
+  );
+
+  const catalogCounts = useMemo(() => {
+    const result: Record<string, number> = { All: CATALOG_PRODUCTS.length };
+    for (const family of CATALOG_FAMILIES) {
+      result[family.id] = CATALOG_PRODUCTS.filter(
+        item => item.family === family.id,
       ).length;
     }
     return result;
@@ -406,7 +432,7 @@ export default function Home() {
           </section>
 
           {/* (6) shop */}
-          <section id="shop" className="gtr-shop gtr-section" aria-label="Shop packages">
+          <section id="shop" className="gtr-shop gtr-section" aria-label="Shop">
             <div className="container">
               <div className="gtr-shop-head">
                 <div>
@@ -419,54 +445,110 @@ export default function Home() {
                   <span className="gtr-filter-chip-btn">
                     <SlidersHorizontal size={16} aria-hidden="true" /> Filter
                   </span>
-                  <select className="gtr-sort" aria-label="Sort packages" defaultValue="featured">
-                    <option value="featured">Sort by: Featured</option>
-                    <option value="low">Price: Low to high</option>
-                    <option value="high">Price: High to low</option>
-                  </select>
+                  {shopTab === "packages" && (
+                    <select className="gtr-sort" aria-label="Sort packages" defaultValue="featured">
+                      <option value="featured">Sort by: Featured</option>
+                      <option value="low">Price: Low to high</option>
+                      <option value="high">Price: High to low</option>
+                    </select>
+                  )}
                 </div>
               </div>
               <PackageFilters
-                filters={categories.map(id => ({ id, label: id }))}
-                activeId={activeCategory}
-                onChange={setActiveCategory}
-                counts={counts}
+                filters={[
+                  { id: "packages", label: "Solar packages" },
+                  { id: "catalog", label: "Product catalog" },
+                ]}
+                activeId={shopTab}
+                onChange={id => setShopTab(id as "packages" | "catalog")}
               />
-              <div className="gtr-shop-meta">
-                <span>
-                  <strong>{filtered.length}</strong> packages
-                </span>
-                <span>Prices shown in NGN · Installation included</span>
-              </div>
-              <AnimatedList
-                className="gtr-package-grid"
-                stagger={0.07}
-                duration={0.45}
-              >
-                {filtered.map(item => (
-                  <PackageCard
-                    key={item.slug}
-                    item={item}
-                    onAdd={addToCart}
-                    onView={setSelected}
+              {shopTab === "packages" ? (
+                <>
+                  <PackageFilters
+                    filters={categories.map(id => ({ id, label: id }))}
+                    activeId={activeCategory}
+                    onChange={setActiveCategory}
+                    counts={counts}
                   />
-                ))}
-              </AnimatedList>
-              <div className="gtr-pagination" aria-label="Pagination">
-                <button disabled aria-label="Previous page">
-                  <ChevronLeft size={17} />
-                </button>
-                <button className="is-active" aria-current="page">
-                  1
-                </button>
-                <button>2</button>
-                <button>3</button>
-                <span aria-hidden="true">...</span>
-                <button>7</button>
-                <button aria-label="Next page">
-                  <ChevronRight size={17} />
-                </button>
-              </div>
+                  <div className="gtr-shop-meta">
+                    <span>
+                      <strong>{filtered.length}</strong> packages
+                    </span>
+                    <span>Prices shown in NGN · Installation included</span>
+                  </div>
+                  <AnimatedList
+                    className="gtr-package-grid"
+                    stagger={0.07}
+                    duration={0.45}
+                  >
+                    {filtered.map(item => (
+                      <PackageCard
+                        key={item.slug}
+                        item={item}
+                        onAdd={addToCart}
+                        onView={setSelected}
+                      />
+                    ))}
+                  </AnimatedList>
+                  <div className="gtr-pagination" aria-label="Pagination">
+                    <button disabled aria-label="Previous page">
+                      <ChevronLeft size={17} />
+                    </button>
+                    <button className="is-active" aria-current="page">
+                      1
+                    </button>
+                    <button>2</button>
+                    <button>3</button>
+                    <span aria-hidden="true">...</span>
+                    <button>7</button>
+                    <button aria-label="Next page">
+                      <ChevronRight size={17} />
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <PackageFilters
+                    filters={[
+                      { id: "All", label: "All" },
+                      ...CATALOG_FAMILIES.map(f => ({ id: f.id, label: f.label })),
+                    ]}
+                    activeId={activeFamily}
+                    onChange={setActiveFamily}
+                    counts={catalogCounts}
+                  />
+                  <div className="gtr-shop-meta">
+                    <span>
+                      <strong>{catalogFiltered.length}</strong> products
+                    </span>
+                    <span>Enquire on WhatsApp · Prices on request</span>
+                  </div>
+                  <AnimatedList
+                    className="gtr-package-grid"
+                    stagger={0.07}
+                    duration={0.45}
+                  >
+                    {catalogFiltered.map(item => (
+                      <CatalogCard key={item.slug} item={item} />
+                    ))}
+                  </AnimatedList>
+                  <div className="gtr-heading" style={{ marginTop: 8 }}>
+                    <p className="gtr-kicker">Done for you</p>
+                    <h2>
+                      Our <span>services</span>
+                    </h2>
+                  </div>
+                  <AnimatedList
+                    className="gtr-package-grid"
+                    stagger={0.07}
+                    duration={0.45}
+                  >
+                    {CATALOG_SERVICES.map(item => (
+                      <ServiceCard key={item.slug} item={item} />
+                    ))}
+                  </AnimatedList>
+                </>
+              )}
             </div>
           </section>
 
