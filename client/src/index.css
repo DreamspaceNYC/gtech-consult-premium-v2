@@ -2848,3 +2848,86 @@ a {
 .planner-share-btn:active {
   transform: scale(0.94);
 }
+
+/* ---------- PWA install banner ---------- */
+.pwa-install {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 460px;
+  margin: 0 auto;
+  background: #102530;
+  color: #fff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  padding-right: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: pwa-install-in 0.45s cubic-bezier(0.22, 0.9, 0.3, 1.12);
+}
+@keyframes pwa-install-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.pwa-install-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  padding: 4px;
+  line-height: 0;
+}
+.pwa-install-text {
+  flex: 1;
+  min-width: 0;
+}
+.pwa-install-title {
+  margin: 0 0 2px;
+  font-weight: 800;
+  font-size: 13px;
+}
+.pwa-install-sub {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.72;
+  line-height: 1.45;
+}
+.pwa-install-sub svg {
+  vertical-align: -1px;
+}
+.pwa-install-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #20a653;
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+.pwa-install-btn:active {
+  transform: scale(0.95);
+}
+/* Keep clear of the floating chat button on phones. */
+@media (max-width: 639px) {
+  .pwa-install {
+    right: 78px;
+  }
+}
