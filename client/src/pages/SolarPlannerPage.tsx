@@ -4,6 +4,7 @@ import { PageHero } from "@/components/site/PageHero";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SolarPlanner } from "@/components/SolarPlanner";
+import { SizingGuide } from "@/components/SizingGuide";
 import { PLANNER_FAQS } from "@/content/plannerFaq";
 import { SITE_PAGES } from "@/content/sitePages";
 import { SeoHead } from "@/seo/SeoHead";
@@ -28,6 +29,7 @@ export default function SolarPlannerPage() {
           description={page.description}
         />
         <SolarPlanner shareable />
+        <SizingGuide />
         <section
           className="content-section"
           aria-labelledby="planner-faq-heading"
@@ -37,9 +39,9 @@ export default function SolarPlannerPage() {
               <p className="page-eyebrow">Common questions</p>
               <h2 id="planner-faq-heading">Solar sizing questions, answered</h2>
               <p>
-                The five questions customers ask us most — answered with real
-                numbers. Try the planner above to get answers for your own
-                home.
+                The twenty questions customers ask us most — answered with
+                real numbers. Try the planner above to get answers for your
+                own home or business.
               </p>
             </div>
             <div className="faq-list">
