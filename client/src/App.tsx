@@ -3,10 +3,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Router as WouterRouter, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ChatWidget from "./components/ChatWidget";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import ServicePage from "./pages/ServicePage";
 import SolarPackages from "./pages/SolarPackages";
+import SolarPlannerPage from "./pages/SolarPlannerPage";
 import Projects from "./pages/Projects";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -29,6 +31,7 @@ function AppRoutes() {
         </Route>
       ))}
       <Route path="/solar-packages" component={SolarPackages} />
+      <Route path="/solar-planner" component={SolarPlannerPage} />
       <Route path="/projects" component={Projects} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
@@ -51,6 +54,7 @@ function App({ ssrPath }: AppProps) {
           <WouterRouter ssrPath={ssrPath}>
             <AppRoutes />
           </WouterRouter>
+          <ChatWidget />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

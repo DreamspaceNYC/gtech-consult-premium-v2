@@ -18,6 +18,9 @@ import { SERVICE_PAGES } from "@/content/services";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SeoHead } from "@/seo/SeoHead";
+import { HeroSlideshow } from "@/components/HeroSlideshow";
+import { InstallationsGallery } from "@/components/InstallationsGallery";
+import { SolarPlanner } from "@/components/SolarPlanner";
 
 const WHATSAPP = "https://wa.me/2348167498489";
 const categories = ["All", "Solar Installation", "CCTV", "Smart Homes"];
@@ -39,7 +42,7 @@ function ProductCard({
         onClick={() => onView(item)}
         aria-label={`View details for ${item.title}`}
       >
-        <img src={item.image} alt={item.title} className="product-image" />
+        <img src={item.image} alt={item.title} className="product-image" loading="lazy" decoding="async" />
         {item.badge && <span className="product-badge">{item.badge}</span>}
         <span className="wish-button">
           <Heart size={16} />
@@ -84,7 +87,7 @@ function DetailPage({
         </button>
         <div className="detail-hero">
           <div className="detail-image">
-            <img src={item.image} alt={item.title} />
+            <img src={item.image} alt={item.title} loading="lazy" decoding="async" />
           </div>
           <div className="detail-intro">
             <p className="store-kicker">G-Tech Consult · Solar Installation</p>
@@ -233,7 +236,8 @@ export default function Home() {
         </main>
       ) : (
         <main id="main-content">
-          <section id="top" className="store-hero">
+          <section id="top" className="store-hero store-hero--photos">
+            <HeroSlideshow />
             <div className="container store-hero-inner">
               <div className="hero-copy-store">
                 <p className="store-kicker">G-Tech Consult</p>
@@ -255,7 +259,7 @@ export default function Home() {
               </div>
               <div className="hero-product-card">
                 <img
-                  src="/images/gtech-premium-comfort-packshot_3201fbb7.png"
+                  src="/images/gtech-premium-comfort-packshot_3201fbb7.webp"
                   alt="G-Tech Premium Comfort solar package"
                 />
                 <div>
@@ -358,6 +362,8 @@ export default function Home() {
               </div>
             </div>
           </section>
+          <InstallationsGallery />
+          <SolarPlanner />
           <section className="assessment-banner">
             <div className="container assessment-inner">
               <div>
@@ -450,7 +456,7 @@ export default function Home() {
                 <div className="cart-items">
                   {cart.map((item, index) => (
                     <div key={`${item.slug}-${index}`}>
-                      <img src={item.image} alt="" />
+                      <img src={item.image} alt="" loading="lazy" decoding="async" />
                       <div>
                         <strong>{item.title}</strong>
                         <span>{formatNaira(item.price)}</span>

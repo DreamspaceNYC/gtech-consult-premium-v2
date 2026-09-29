@@ -1,6 +1,7 @@
 export type StaticPageSlug =
   | "home"
   | "solarPackages"
+  | "solarPlanner"
   | "projects"
   | "about"
   | "contact"
@@ -27,6 +28,13 @@ export const SITE_PAGES: Record<StaticPageSlug, SitePage> = {
     description:
       "Compare G-Tech Consult solar packages for different power needs, with inverter, battery, panel and installation details to help plan your home or business power system.",
     h1: "Solar Packages for Different Power Needs",
+  },
+  solarPlanner: {
+    path: "/solar-planner",
+    title: "Free Solar Calculator Nigeria — Size Your Inverter & Battery | G-Tech Consult",
+    description:
+      "Free solar planner: pick your appliances and usage times, get inverter and battery sizing, matched G-Tech packages with real naira prices, and generator payback estimates.",
+    h1: "Plan Your Solar",
   },
   projects: {
     path: "/projects",
