@@ -7,12 +7,12 @@ export const PLANNER_FAQS: { question: string; answer: string }[] = [
   {
     question: "Will solar carry my air conditioner?",
     answer:
-      "Yes, if the system is sized for it. A 1.5HP air conditioner draws about 1,200W, so running it from 9pm to 6am uses roughly 11kWh overnight — that is why G-Tech Consult's Two-AC package pairs a 10kVA inverter with 32kWh of battery storage. Use the planner above to size it from your own on and off times.",
+      "Yes, if the system is sized for it. A 1.5HP air conditioner draws about 1,200W, so running it 9 hours overnight uses roughly 11kWh — that is why G-Tech Consult's Two-AC package pairs a 10kVA inverter with 32kWh of battery storage. Use the planner above: set how long your AC runs per day and when you use power most.",
   },
   {
     question: "What size inverter and battery do I need?",
     answer:
-      "Add up the watts of everything that runs at the same time, then add 25% headroom — that is your inverter size in kVA. Size the battery from what you use at night (6pm to 6am), plus about 30% extra for cloudy days. The planner above does both calculations from your appliance list and usage times.",
+      "Add up the watts of everything that runs at the same time, then add 25% headroom — that is your inverter size in kVA. Size the battery from what you use at night, plus about 30% extra for cloudy days. The planner above does both calculations from your appliance list and when you use power most.",
   },
   {
     question: "How much does solar installation cost in Nigeria?",
