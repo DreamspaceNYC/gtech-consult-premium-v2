@@ -6,7 +6,9 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  ClipboardCheck,
   HousePlus,
+  MapPin,
   MessageCircle,
   ShoppingCart,
   SlidersHorizontal,
@@ -23,11 +25,7 @@ import { SERVICE_PAGES } from "@/content/services";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SeoHead } from "@/seo/SeoHead";
-import { HeroSlideshow } from "@/components/HeroSlideshow";
-import { InstallationsGallery } from "@/components/InstallationsGallery";
 import { SolarPlanner } from "@/components/SolarPlanner";
-// Interactive 3D product hero, built by a sibling builder (SSR-safe, lazy).
-import { Hero3DSection } from "@/components/Hero3DSection";
 // Shop components, built by a sibling builder.
 import { PackageCard } from "@/components/packages/PackageCard";
 import { PackageFilters } from "@/components/packages/PackageFilters";
@@ -307,10 +305,37 @@ export default function Home() {
                 </div>
               </div>
               <div className="gtr-hero-visual">
-                <Hero3DSection />
+                <div className="gtr-hero-static" aria-label="Why choose G-Tech">
+                  <span className="gtr-hero-static__badge" aria-hidden="true">
+                    <Sun size={24} />
+                  </span>
+                  <p className="gtr-hero-static__kicker">Solar packages</p>
+                  <p className="gtr-hero-static__price">
+                    from{" "}
+                    {formatNaira(
+                      Math.min(...packages.map(p => p.price))
+                    )}
+                  </p>
+                  <p className="gtr-hero-static__count">
+                    {packages.length} ready-made packages
+                  </p>
+                  <ul className="gtr-hero-static__points">
+                    <li>
+                      <ClipboardCheck size={15} aria-hidden="true" />
+                      Free site assessment
+                    </li>
+                    <li>
+                      <MapPin size={15} aria-hidden="true" />
+                      Ondo-based, serving Nigeria
+                    </li>
+                    <li>
+                      <MessageCircle size={15} aria-hidden="true" />
+                      WhatsApp support
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
-            <HeroSlideshow />
           </section>
 
           {/* (4) category strip */}
@@ -445,10 +470,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* (7) installations gallery */}
-          <InstallationsGallery />
-
-          {/* (8) embedded solar planner */}
+          {/* (7) embedded solar planner */}
           <SolarPlanner />
 
           {/* (9) assessment banner */}
