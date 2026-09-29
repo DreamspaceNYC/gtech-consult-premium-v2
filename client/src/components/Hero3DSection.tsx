@@ -42,7 +42,7 @@ const CAPTIONS = [
 /** Static fallback: poster image + the three captions as plain HTML. */
 function StaticFallback() {
   return (
-    <div className="flex min-h-[52vh] w-full flex-col items-center justify-center gap-6 px-6 py-10 lg:min-h-[70vh]">
+    <div className="flex min-h-[300px] w-full flex-col items-center justify-center gap-6 px-6 py-10 sm:min-h-[340px] lg:min-h-[70vh]">
       <img
         src={POSTER}
         alt="G-Tech solar panel, lithium battery and hybrid inverter"
@@ -68,7 +68,7 @@ function StaticFallback() {
 /** Suspense fallback while the 3D chunk loads: poster image only. */
 function PosterFallback() {
   return (
-    <div className="flex min-h-[52vh] w-full items-center justify-center px-6 py-10 lg:min-h-[70vh]">
+    <div className="flex min-h-[300px] w-full items-center justify-center px-6 py-10 sm:min-h-[340px] lg:min-h-[70vh]">
       <img
         src={POSTER}
         alt="G-Tech solar products"
@@ -149,7 +149,7 @@ export function Hero3DSection() {
     <section
       ref={sectionRef}
       aria-label="G-Tech solar products in 3D"
-      className="relative w-full min-h-[52vh] overflow-hidden lg:min-h-[70vh]"
+      className="relative w-full min-h-[300px] overflow-hidden sm:min-h-[340px] lg:min-h-[70vh]"
     >
       {show3D ? (
         <SectionErrorBoundary fallback={<StaticFallback />}>

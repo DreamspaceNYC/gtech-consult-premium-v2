@@ -56,9 +56,37 @@ const PRODUCTS: Record<ProductId, ProductInfo> = {
 
 const DEFAULT_CAM_POS: [number, number, number] = [0, 2.3, 9];
 const DEFAULT_CAM_TARGET: [number, number, number] = [0, 1.05, 0];
+const DEFAULT_FOV = 38;
+/**
+ * Mobile framing (viewport <= 768px): the camera moves in close so the
+ * product trio fills a portrait phone canvas instead of rendering tiny
+ * inside a wide, mostly-empty frame. Desktop framing is untouched.
+ */
+const MOBILE_CAM_POS: [number, number, number] = [0, 1.7, 4.6];
+const MOBILE_CAM_TARGET: [number, number, number] = [0, 1.0, 0];
+const MOBILE_FOV = 42;
+const LOGO_BASE_Y = 3.55;
+/** Lowered on mobile so the logo plaque stays fully in frame above the products. */
+const LOGO_BASE_Y_MOBILE = 2.35;
 const IDLE_RESUME_MS = 3000;
 const DRAG_PX = 0.008; // radians per pixel of horizontal drag
 const CLICK_SLOP_PX = 8;
+
+/** True when the viewport is phone-narrow; drives the closer mobile camera. */
+function useIsMobile(): boolean {
+  const [isMobile, setIsMobile] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 768px)").matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return isMobile;
+}
 
 function useProductTextures() {
   const [panelTex, batteryTex, inverterTex, logoTex] = useLoader(THREE.TextureLoader, [
@@ -169,7 +197,8 @@ function StudioFloor() {
 
 function LogoPlaque({ texture, reducedMotion }: { texture: THREE.Texture; reducedMotion: boolean }) {
   const ref = useRef<THREE.Mesh>(null);
-  const baseY = 3.55;
+  const isMobile = useIsMobile();
+  const baseY = isMobile ? LOGO_BASE_Y_MOBILE : LOGO_BASE_Y;
 
   useFrame((state) => {
     if (!ref.current || reducedMotion) return;
@@ -228,7 +257,10 @@ interface RigProps {
 
 /** Camera focus spring: lerps position + lookAt target toward the focused product. */
 function CameraRig({ selectedRef }: Pick<RigProps, "selectedRef">) {
-  const target = useRef(new THREE.Vector3(...DEFAULT_CAM_TARGET));
+  const isMobile = useIsMobile();
+  const homePos = isMobile ? MOBILE_CAM_POS : DEFAULT_CAM_POS;
+  const homeTarget = isMobile ? MOBILE_CAM_TARGET : DEFAULT_CAM_TARGET;
+  const target = useRef(new THREE.Vector3(...homeTarget));
   const desiredPos = useMemo(() => new THREE.Vector3(), []);
   const desiredTarget = useMemo(() => new THREE.Vector3(), []);
 
@@ -240,8 +272,8 @@ function CameraRig({ selectedRef }: Pick<RigProps, "selectedRef">) {
       desiredPos.set(p.position[0] + p.camOffset[0], p.position[1] + p.camOffset[1], p.position[2] + p.camOffset[2]);
       desiredTarget.set(p.position[0], p.position[1], p.position[2]);
     } else {
-      desiredPos.set(...DEFAULT_CAM_POS);
-      desiredTarget.set(...DEFAULT_CAM_TARGET);
+      desiredPos.set(...homePos);
+      desiredTarget.set(...homeTarget);
     }
     const k = 1 - Math.exp(-5 * delta);
     cam.position.lerp(desiredPos, k);
@@ -319,6 +351,7 @@ export default function Hero3D() {
   const [reducedMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
+  const isMobile = useIsMobile();
 
   const groupRef = useRef<THREE.Group | null>(null);
   const dragRef = useRef({ dragging: false, startX: 0, startRot: 0, moved: 0 });
@@ -403,7 +436,10 @@ export default function Hero3D() {
 
   return (
     <div
-      className="relative h-full w-full"
+      // Explicit heights (mirroring Hero3DSection) so the canvas size is
+      // deterministic: percentage heights against the section's min-height
+      // left the WebGL canvas undersized on some mobile browsers.
+      className="relative h-[300px] w-full sm:h-[340px] lg:h-[70vh]"
       role="region"
       aria-label="Interactive 3D product showcase. Drag or use left and right arrow keys to rotate. Click a product to focus it."
       tabIndex={0}
@@ -414,7 +450,12 @@ export default function Hero3D() {
         dpr={[1, 1.75]}
         gl={{ antialias: true, alpha: true }}
         shadows
-        camera={{ position: DEFAULT_CAM_POS, fov: 38, near: 0.1, far: 60 }}
+        camera={{
+          position: isMobile ? MOBILE_CAM_POS : DEFAULT_CAM_POS,
+          fov: isMobile ? MOBILE_FOV : DEFAULT_FOV,
+          near: 0.1,
+          far: 60,
+        }}
         onPointerMissed={() => select(null)}
         style={{ touchAction: "pan-y" }}
       >
