@@ -19,8 +19,8 @@ export interface Appliance {
   name: string;
   variants: VariantOption[];
   defaultVariant: number;
-  defaultOn: number;
-  defaultOff: number;
+  /** Typical hours per day this appliance runs — the customer can change it. */
+  defaultHours: number;
 }
 
 export const APPLIANCES: Appliance[] = [
@@ -33,8 +33,7 @@ export const APPLIANCES: Appliance[] = [
       { label: "2HP", watts: 1800 },
     ],
     defaultVariant: 1,
-    defaultOn: 21,
-    defaultOff: 6,
+    defaultHours: 9,
   },
   {
     id: "fan",
@@ -45,8 +44,7 @@ export const APPLIANCES: Appliance[] = [
       { label: "Industrial", watts: 200 },
     ],
     defaultVariant: 0,
-    defaultOn: 21,
-    defaultOff: 6,
+    defaultHours: 9,
   },
   {
     id: "tv",
@@ -57,8 +55,7 @@ export const APPLIANCES: Appliance[] = [
       { label: '55"+', watts: 150 },
     ],
     defaultVariant: 1,
-    defaultOn: 18,
-    defaultOff: 23,
+    defaultHours: 5,
   },
   {
     id: "fridge",
@@ -69,8 +66,7 @@ export const APPLIANCES: Appliance[] = [
       { label: "Double door", watts: 250 },
     ],
     defaultVariant: 1,
-    defaultOn: 0,
-    defaultOff: 0,
+    defaultHours: 24,
   },
   {
     id: "freezer",
@@ -80,8 +76,7 @@ export const APPLIANCES: Appliance[] = [
       { label: "Large chest", watts: 250 },
     ],
     defaultVariant: 0,
-    defaultOn: 0,
-    defaultOff: 0,
+    defaultHours: 24,
   },
   {
     id: "pump",
@@ -93,8 +88,7 @@ export const APPLIANCES: Appliance[] = [
       { label: "2HP", watts: 1500 },
     ],
     defaultVariant: 1,
-    defaultOn: 6,
-    defaultOff: 8,
+    defaultHours: 2,
   },
   {
     id: "washer",
@@ -105,8 +99,7 @@ export const APPLIANCES: Appliance[] = [
       { label: "Front loader + heater", watts: 2000 },
     ],
     defaultVariant: 0,
-    defaultOn: 9,
-    defaultOff: 11,
+    defaultHours: 2,
   },
   {
     id: "microwave",
@@ -116,8 +109,7 @@ export const APPLIANCES: Appliance[] = [
       { label: "Large", watts: 1200 },
     ],
     defaultVariant: 0,
-    defaultOn: 18,
-    defaultOff: 19,
+    defaultHours: 1,
   },
   {
     id: "lights",
@@ -128,8 +120,7 @@ export const APPLIANCES: Appliance[] = [
       { label: "20 LED bulbs", watts: 200 },
     ],
     defaultVariant: 1,
-    defaultOn: 18,
-    defaultOff: 23,
+    defaultHours: 5,
   },
   {
     id: "charging",
@@ -139,10 +130,42 @@ export const APPLIANCES: Appliance[] = [
       { label: "Desktop setup", watts: 200 },
     ],
     defaultVariant: 0,
-    defaultOn: 8,
-    defaultOff: 14,
+    defaultHours: 6,
   },
 ];
+
+/* ---------- usage pattern (replaces per-appliance on/off times) ---------- */
+
+/**
+ * When the customer uses power most. One question for the whole plan —
+ * far simpler than setting on/off times per appliance, and it is all the
+ * battery sizing needs.
+ */
+export type UsagePattern = "day" | "mixed" | "night";
+
+export const USAGE_PATTERNS: { id: UsagePattern; label: string }[] = [
+  { id: "day", label: "Mostly daytime" },
+  { id: "mixed", label: "Day and night" },
+  { id: "night", label: "Mostly at night" },
+];
+
+export const USAGE_LABEL: Record<UsagePattern, string> = {
+  day: "mostly during the day",
+  mixed: "day and night",
+  night: "mostly at night",
+};
+
+/**
+ * Share of daily energy assumed to fall at night (18:00–06:00).
+ * Drives the battery sizing; the 30% cloudy-day margin still applies.
+ */
+export const NIGHT_SHARE: Record<UsagePattern, number> = {
+  day: 0.3,
+  mixed: 0.55,
+  night: 0.8,
+};
+
+export const DEFAULT_USAGE: UsagePattern = "night";
 
 /**
  * Keyword database for custom appliances: type a name, get its real-world
@@ -275,11 +298,12 @@ const PACKAGE_BATTERY_KWH: Record<string, number | null> = {
 export const packageBySlug = (slug: string): SolarPackage =>
   SOLAR_PACKAGES.find(p => p.slug === slug) as SolarPackage;
 
+/** What the customer sets per appliance: how many, which type, how long on. */
 export interface LoadSelection {
   qty: number;
   variant: number;
-  on: number;
-  off: number;
+  /** Hours the appliance runs per day (0–24). */
+  hours: number;
 }
 
 export type LoadState = Record<string, LoadSelection>;
@@ -290,26 +314,22 @@ export interface CustomAppliance {
   variantLabel: string;
   watts: number;
   qty: number;
-  on: number;
-  off: number;
+  /** Hours the appliance runs per day (0–24). */
+  hours: number;
 }
 
 export const MAX_CUSTOM = 6;
 export const MAX_QTY = 10;
+export const MAX_HOURS = 24;
 
 export function defaultLoadState(): LoadState {
   const state: LoadState = {};
   for (const a of APPLIANCES)
-    state[a.id] = {
-      qty: 0,
-      variant: a.defaultVariant,
-      on: a.defaultOn,
-      off: a.defaultOff,
-    };
+    state[a.id] = { qty: 0, variant: a.defaultVariant, hours: a.defaultHours };
   return state;
 }
 
-/** Hours per day from on/off times. Same time = runs 24 hours. */
+/** Hours per day from on/off times. Same time = runs 24 hours. (Legacy.) */
 export function hoursBetween(on: number, off: number): number {
   if (on === off) return 24;
   return (off - on + 24) % 24;
@@ -325,7 +345,7 @@ function isActiveAt(h: number, on: number, off: number): boolean {
   return h >= on || h < off;
 }
 
-/** How many of the appliance's daily hours fall at night (18:00–06:00). */
+/** How many of the appliance's daily hours fall at night (18:00–06:00). (Legacy.) */
 export function nightHours(on: number, off: number): number {
   let n = 0;
   for (let h = 0; h < 24; h++)
@@ -333,7 +353,7 @@ export function nightHours(on: number, off: number): number {
   return n;
 }
 
-/** "21" -> "9pm", "0" -> "12am". */
+/** "21" -> "9pm", "0" -> "12am". (Legacy.) */
 export function fmtHour(h: number): string {
   if (h === 0) return "12am";
   if (h === 12) return "12pm";
@@ -368,27 +388,23 @@ export interface SizingResult {
 export function computeSizing(
   load: LoadState,
   customs: CustomAppliance[],
+  usage: UsagePattern = DEFAULT_USAGE,
 ): SizingResult {
   let rawPeak = 0;
   let dailyWh = 0;
-  let nightWh = 0;
   let acCount = 0;
   let hasPump = false;
 
   const add = (
     watts: number,
     qty: number,
-    on: number,
-    off: number,
+    hours: number,
     isAc: boolean,
     isPump: boolean,
   ) => {
-    if (qty <= 0 || watts <= 0) return;
+    if (qty <= 0 || watts <= 0 || hours <= 0) return;
     rawPeak += watts * qty;
-    const hrs = hoursBetween(on, off);
-    const nHrs = nightHours(on, off);
-    dailyWh += watts * qty * hrs;
-    nightWh += watts * qty * nHrs;
+    dailyWh += watts * qty * hours;
     if (isAc) acCount += qty;
     if (isPump) hasPump = true;
   };
@@ -397,14 +413,15 @@ export function computeSizing(
     const sel = load[a.id];
     if (!sel) continue;
     const watts = a.variants[sel.variant]?.watts ?? 0;
-    add(watts, sel.qty, sel.on, sel.off, a.id === "ac", a.id === "pump");
+    add(watts, sel.qty, sel.hours, a.id === "ac", a.id === "pump");
   }
   for (const c of customs)
-    add(c.watts, c.qty, c.on, c.off, false, /pump|borehole/i.test(c.name));
+    add(c.watts, c.qty, c.hours, false, /pump|borehole/i.test(c.name));
 
   const hasLoad = rawPeak > 0;
   const peakWatts = Math.round(rawPeak * 1.25);
   const inverterKva = peakWatts / 1000;
+  const nightWh = Math.round(dailyWh * NIGHT_SHARE[usage]);
   const batteryKwh = Math.round(((nightWh * 1.3) / 1000) * 10) / 10;
 
   const pkg = matchPackage(inverterKva, acCount, hasPump);
@@ -416,7 +433,7 @@ export function computeSizing(
     hasLoad,
     peakWatts,
     dailyWh: Math.round(dailyWh),
-    nightWh: Math.round(nightWh),
+    nightWh,
     inverterKva: Math.round(inverterKva * 10) / 10,
     batteryKwh,
     acCount,
@@ -490,10 +507,10 @@ function describeSelection(
   lines: string[],
   qty: number,
   name: string,
-  on: number,
-  off: number,
+  hours: number,
 ): void {
-  if (qty > 0) lines.push(`- ${qty}x ${name}, ${fmtHour(on)}–${fmtHour(off)}`);
+  if (qty > 0)
+    lines.push(`- ${qty}x ${name}, ${hours}h per day`);
 }
 
 /* ---------- shareable plans ---------- */
@@ -501,6 +518,7 @@ function describeSelection(
 export interface PlanSnapshot {
   load: LoadState;
   customs: CustomAppliance[];
+  usage: UsagePattern;
   period: FuelPeriod;
   fuelAmount: string;
 }
@@ -523,21 +541,28 @@ const b64urlDecode = (code: string): string => {
   );
 };
 
+function asUsage(v: unknown): UsagePattern {
+  return v === "day" || v === "mixed" || v === "night" ? v : DEFAULT_USAGE;
+}
+
 /** Compact the customer's plan into a URL-safe string for sharing. */
 export function encodePlan(
   load: LoadState,
   customs: CustomAppliance[],
+  usage: UsagePattern,
   period: FuelPeriod,
   fuelAmount: string,
 ): string {
   const compact = {
+    v: 2,
     l: APPLIANCES.map(a => {
       const s = load[a.id];
-      return s && s.qty > 0 ? [s.qty, s.variant, s.on, s.off] : 0;
+      return s && s.qty > 0 ? [s.qty, s.variant, s.hours] : 0;
     }),
     c: customs
       .filter(c => c.qty > 0 && c.watts > 0)
-      .map(c => [c.name, c.watts, c.qty, c.on, c.off]),
+      .map(c => [c.name, c.watts, c.qty, c.hours]),
+    u: usage,
     p: period,
     f: fuelAmount || "",
   };
@@ -548,24 +573,32 @@ export function encodePlan(
 export function decodePlan(code: string): PlanSnapshot | null {
   try {
     const raw = JSON.parse(b64urlDecode(code)) as {
+      v?: unknown;
       l?: unknown;
       c?: unknown;
+      u?: unknown;
       p?: unknown;
       f?: unknown;
     };
+    const v2 = raw.v === 2;
     const load = defaultLoadState();
     if (Array.isArray(raw.l)) {
       APPLIANCES.forEach((a, i) => {
         const v = (raw.l as unknown[])[i];
         if (Array.isArray(v) && Number(v[0]) > 0) {
+          const hours = v2
+            ? Math.min(MAX_HOURS, Math.max(0, Math.round(Number(v[2]) || 0)))
+            : hoursBetween(
+                Math.min(23, Math.max(0, Number(v[2]) || 0)),
+                Math.min(23, Math.max(0, Number(v[3]) || 0)),
+              );
           load[a.id] = {
             qty: Math.min(MAX_QTY, Math.max(0, Number(v[0]) | 0)),
             variant: Math.min(
               a.variants.length - 1,
               Math.max(0, Number(v[1]) | 0),
             ),
-            on: Math.min(23, Math.max(0, Number(v[2]) | 0)),
-            off: Math.min(23, Math.max(0, Number(v[3]) | 0)),
+            hours,
           };
         }
       });
@@ -574,14 +607,19 @@ export function decodePlan(code: string): PlanSnapshot | null {
       ? (raw.c as unknown[]).slice(0, MAX_CUSTOM).map((c, i) => {
           const parts = Array.isArray(c) ? c : [];
           const watts = Math.max(0, Number(parts[1]) || 0);
+          const hours = v2
+            ? Math.min(MAX_HOURS, Math.max(0, Math.round(Number(parts[3]) || 0)))
+            : hoursBetween(
+                Math.min(23, Math.max(0, Number(parts[3]) || 0)),
+                Math.min(23, Math.max(0, Number(parts[4]) || 0)),
+              );
           return {
             id: `shared-${i}`,
             name: String(parts[0] ?? "Custom appliance").slice(0, 60),
             variantLabel: `${watts}W`,
             watts,
             qty: Math.min(MAX_QTY, Math.max(1, Number(parts[2]) || 1)),
-            on: Math.min(23, Math.max(0, Number(parts[3]) || 0)),
-            off: Math.min(23, Math.max(0, Number(parts[4]) || 0)),
+            hours,
           };
         })
       : [];
@@ -589,7 +627,13 @@ export function decodePlan(code: string): PlanSnapshot | null {
       raw.p === "daily" || raw.p === "weekly" || raw.p === "monthly"
         ? raw.p
         : "monthly";
-    return { load, customs, period, fuelAmount: String(raw.f ?? "") };
+    return {
+      load,
+      customs,
+      usage: asUsage(raw.u),
+      period,
+      fuelAmount: String(raw.f ?? ""),
+    };
   } catch {
     return null;
   }
@@ -604,6 +648,7 @@ export function planShareUrl(code: string): string {
 export function buildPlannerMessage(
   load: LoadState,
   customs: CustomAppliance[],
+  usage: UsagePattern,
   sizing: SizingResult,
   pkg: SolarPackage,
   period: FuelPeriod,
@@ -619,12 +664,13 @@ export function buildPlannerMessage(
     const sel = load[a.id];
     if (!sel) continue;
     const v = a.variants[sel.variant];
-    describeSelection(lines, sel.qty, `${a.name} (${v?.label ?? ""})`, sel.on, sel.off);
+    describeSelection(lines, sel.qty, `${a.name} (${v?.label ?? ""})`, sel.hours);
   }
   for (const c of customs)
-    describeSelection(lines, c.qty, `${c.name} (${c.variantLabel})`, c.on, c.off);
+    describeSelection(lines, c.qty, `${c.name} (${c.variantLabel})`, c.hours);
   lines.push(
     "",
+    `We use power ${USAGE_LABEL[usage]}.`,
     `Estimated load: ${(sizing.peakWatts / 1000).toFixed(1)}kW peak, ${(sizing.dailyWh / 1000).toFixed(1)}kWh per day (${(sizing.nightWh / 1000).toFixed(1)}kWh at night)`,
     `Recommended: ${pkg.shortTitle} — ${formatNaira(pkg.price)}`,
   );
@@ -642,6 +688,7 @@ export function buildPlannerMessage(
 export function buildPlannerWhatsAppLink(
   load: LoadState,
   customs: CustomAppliance[],
+  usage: UsagePattern,
   sizing: SizingResult,
   pkg: SolarPackage,
   period: FuelPeriod,
@@ -651,6 +698,7 @@ export function buildPlannerWhatsAppLink(
   const text = buildPlannerMessage(
     load,
     customs,
+    usage,
     sizing,
     pkg,
     period,
