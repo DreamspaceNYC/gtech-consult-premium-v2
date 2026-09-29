@@ -13,3 +13,13 @@ if (root.hasChildNodes()) {
 } else {
   createRoot(root).render(<App />);
 }
+
+// PWA: register the service worker for offline support + installability.
+// HTTPS only, so local development is untouched.
+if ("serviceWorker" in navigator && window.location.protocol === "https:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      /* offline support unavailable — the site still works normally */
+    });
+  });
+}
