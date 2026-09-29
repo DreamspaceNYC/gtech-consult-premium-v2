@@ -1,6 +1,7 @@
 import { BUSINESS } from "@/content/business";
 import { SOLAR_PACKAGES } from "@/content/packages";
 import { PLANNER_FAQS } from "@/content/plannerFaq";
+import { COMMERCIAL_FAQS } from "@/content/commercialFaq";
 import { getServiceByPath, SERVICE_PAGES } from "@/content/services";
 
 const publicPath = (path: string) =>
@@ -187,6 +188,7 @@ function buildFaqSchema(path: string): JsonLd | undefined {
 
   if (path === "/solar-packages") return toFaqPage(SOLAR_PACKAGES_FAQS);
   if (path === "/solar-planner") return toFaqPage(PLANNER_FAQS);
+  if (path === "/commercial-solar-sizing") return toFaqPage(COMMERCIAL_FAQS);
   const service = getServiceByPath(path);
   if (service?.faqs?.length) return toFaqPage(service.faqs);
   return undefined;

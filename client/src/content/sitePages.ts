@@ -2,6 +2,7 @@ export type StaticPageSlug =
   | "home"
   | "solarPackages"
   | "solarPlanner"
+  | "commercialSizing"
   | "projects"
   | "about"
   | "contact"
@@ -31,10 +32,17 @@ export const SITE_PAGES: Record<StaticPageSlug, SitePage> = {
   },
   solarPlanner: {
     path: "/solar-planner",
-    title: "Free Solar Calculator Nigeria — Size Your Inverter & Battery | G-Tech Consult",
+    title: "Solar Inverter Size Calculator Nigeria — Free kVA Sizing Tool | G-Tech Consult",
     description:
-      "Free solar planner: pick your appliances and usage times, get inverter and battery sizing, matched G-Tech packages with real naira prices, and generator payback estimates.",
-    h1: "Plan Your Solar",
+      "Free solar inverter size calculator for Nigeria: enter your appliances and daily usage to size your inverter (kVA), battery and panels. Commercial sizing for Lagos and Ondo businesses, real naira package prices and generator payback.",
+    h1: "Solar Inverter Size Calculator Nigeria",
+  },
+  commercialSizing: {
+    path: "/commercial-solar-sizing",
+    title: "Commercial Solar Inverter Sizing in Lagos & Ondo | G-Tech Consult",
+    description:
+      "Commercial solar inverter sizing for businesses in Lagos, Ondo and across Nigeria: 3-phase and hybrid system design, load audits and capacity estimates from your equipment list or electricity bill.",
+    h1: "Commercial Solar Inverter Sizing",
   },
   projects: {
     path: "/projects",
