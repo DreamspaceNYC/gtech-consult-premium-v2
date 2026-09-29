@@ -2277,15 +2277,34 @@ a {
   color: var(--ink);
 }
 
-.planner-hours select {
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 6px 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink);
-  background: #fff;
-  cursor: pointer;
+/* Hours-per-day stepper inside an appliance row */
+.planner-hours {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.planner-hours-unit {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--green-dark);
+  white-space: nowrap;
+}
+
+/* Small uppercase field labels ("How many?", "On for", "Type") */
+.planner-field-tag {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+}
+
+.planner-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .planner-result {
@@ -2545,6 +2564,9 @@ a {
 .planner-variant {
   flex: 1 1 150px;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 .planner-variant select {
   width: 100%;
@@ -2557,41 +2579,48 @@ a {
   background: #fff;
   cursor: pointer;
 }
-.planner-times {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+
+/* "When do you use power most?" picker */
+.planner-usage {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line);
 }
-.planner-time {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-.planner-time-tag {
-  font-size: 10px;
+.planner-usage-label {
   font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #6b7280;
+  font-size: 14px;
+  color: var(--ink);
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
 }
-.planner-time select {
+.planner-usage-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.planner-usage-chip {
   border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 6px 4px;
-  font-size: 12px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 9px 16px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--ink);
-  background: #fff;
   cursor: pointer;
+  transition: transform 0.12s ease;
 }
-.planner-hours-badge {
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--green-dark);
-  background: #eef5ef;
-  border-radius: 12px;
-  padding: 5px 10px;
-  white-space: nowrap;
+.planner-usage-chip:active {
+  transform: scale(0.94);
+}
+.planner-usage-chip.active {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: #fff;
+}
+.planner-usage-hint {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 8px 0 0;
 }
 
 /* Press feedback */
