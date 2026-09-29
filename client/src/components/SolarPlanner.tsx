@@ -11,11 +11,14 @@ import {
 } from "lucide-react";
 import {
   APPLIANCES,
+  DEFAULT_USAGE,
   FUEL_PRICE_PER_LITRE,
-  HOUR_LABELS,
   MAX_CUSTOM,
+  MAX_HOURS,
   MAX_QTY,
   SIZE_BANDS,
+  USAGE_LABEL,
+  USAGE_PATTERNS,
   buzz,
   buildPlannerMessage,
   buildPlannerWhatsAppLink,
@@ -24,10 +27,8 @@ import {
   decodePlan,
   defaultLoadState,
   encodePlan,
-  fmtHour,
   formatNaira,
   fuelToMonthly,
-  hoursBetween,
   matchVariants,
   packageBySlug,
   planShareUrl,
@@ -37,6 +38,7 @@ import {
   type LoadState,
   type LoadSelection,
   type PlanSnapshot,
+  type UsagePattern,
   type VariantOption,
 } from "@/content/planner";
 import { SOLAR_PACKAGES } from "@/content/packages";
@@ -136,14 +138,16 @@ function Stepper({
   value,
   onChange,
   label,
+  max = MAX_QTY,
 }: {
   value: number;
   onChange: (v: number) => void;
   label: string;
+  max?: number;
 }) {
   const step = (d: number) => {
     buzz(10);
-    onChange(Math.max(0, Math.min(MAX_QTY, value + d)));
+    onChange(Math.max(0, Math.min(max, value + d)));
   };
   return (
     <div className="planner-stepper" role="group" aria-label={label}>
@@ -151,7 +155,7 @@ function Stepper({
         type="button"
         onClick={() => step(-1)}
         disabled={value <= 0}
-        aria-label={`Fewer ${label}`}
+        aria-label={`Less ${label}`}
       >
         <Minus size={14} />
       </button>
@@ -159,42 +163,12 @@ function Stepper({
       <button
         type="button"
         onClick={() => step(1)}
-        disabled={value >= MAX_QTY}
+        disabled={value >= max}
         aria-label={`More ${label}`}
       >
         <Plus size={14} />
       </button>
     </div>
-  );
-}
-
-function TimeSelect({
-  value,
-  onChange,
-  label,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-  label: string;
-}) {
-  return (
-    <label className="planner-time">
-      <span className="planner-time-tag">{label}</span>
-      <select
-        value={value}
-        onChange={e => {
-          buzz(8);
-          onChange(Number(e.target.value));
-        }}
-        aria-label={label}
-      >
-        {HOUR_LABELS.map((text, h) => (
-          <option key={h} value={h}>
-            {text}
-          </option>
-        ))}
-      </select>
-    </label>
   );
 }
 
@@ -208,7 +182,6 @@ function ApplianceRow({
   onChange: (sel: LoadSelection) => void;
 }) {
   const watts = appliance.variants[sel.variant]?.watts ?? 0;
-  const hrs = hoursBetween(sel.on, sel.off);
   return (
     <div className="planner-appliance">
       <div className="planner-appliance-top">
@@ -218,15 +191,18 @@ function ApplianceRow({
             ≈{watts.toLocaleString("en-NG")}W each
           </span>
         </div>
-        <Stepper
-          value={sel.qty}
-          onChange={qty => onChange({ ...sel, qty })}
-          label={appliance.name}
-        />
+        <div className="planner-qty">
+          <span className="planner-field-tag">How many?</span>
+          <Stepper
+            value={sel.qty}
+            onChange={qty => onChange({ ...sel, qty })}
+            label={appliance.name}
+          />
+        </div>
       </div>
       <div className="planner-appliance-bottom">
         <label className="planner-variant">
-          <span className="visually-hidden">Type of {appliance.name}</span>
+          <span className="planner-field-tag">Type</span>
           <select
             value={sel.variant}
             onChange={e => {
@@ -242,20 +218,15 @@ function ApplianceRow({
             ))}
           </select>
         </label>
-        <div className="planner-times">
-          <TimeSelect
-            value={sel.on}
-            onChange={on => onChange({ ...sel, on })}
-            label="On"
+        <div className="planner-hours">
+          <span className="planner-field-tag">On for</span>
+          <Stepper
+            value={sel.hours}
+            max={MAX_HOURS}
+            onChange={hours => onChange({ ...sel, hours })}
+            label={`hours per day for ${appliance.name}`}
           />
-          <TimeSelect
-            value={sel.off}
-            onChange={off => onChange({ ...sel, off })}
-            label="Off"
-          />
-          <span className="planner-hours-badge">
-            {hrs === 24 ? "24h" : `${hrs}h/day`}
-          </span>
+          <span className="planner-hours-unit">hrs/day</span>
         </div>
       </div>
     </div>
@@ -268,8 +239,7 @@ interface CustomDraft {
   id: string;
   name: string;
   qty: number;
-  on: number;
-  off: number;
+  hours: number;
   variantIdx: number;
   manualWatts: string;
   /** True when the user typed exact watts (or a shared plan fixed them). */
@@ -307,7 +277,6 @@ function CustomRow({
   const manualIdx = opts.length - 1;
   const selectedIdx = Math.min(draft.variantIdx, manualIdx);
   const isManual = draft.manual || opts[selectedIdx].watts === -1;
-  const hrs = hoursBetween(draft.on, draft.off);
 
   const setName = (name: string) => {
     const before = JSON.stringify(
@@ -345,11 +314,14 @@ function CustomRow({
           aria-label="Appliance name"
         />
         <div className="planner-custom-actions">
-          <Stepper
-            value={draft.qty}
-            onChange={qty => onChange({ ...draft, qty })}
-            label={draft.name || "custom appliance"}
-          />
+          <div className="planner-qty">
+            <span className="planner-field-tag">How many?</span>
+            <Stepper
+              value={draft.qty}
+              onChange={qty => onChange({ ...draft, qty })}
+              label={draft.name || "custom appliance"}
+            />
+          </div>
           <button
             type="button"
             className="planner-remove"
@@ -366,7 +338,7 @@ function CustomRow({
       <div className="planner-appliance-bottom">
         {!draft.manual && (
           <label className="planner-variant">
-            <span className="visually-hidden">Type or size</span>
+            <span className="planner-field-tag">Type</span>
             <select
               value={selectedIdx}
               onChange={e => setVariantIdx(Number(e.target.value))}
@@ -409,22 +381,60 @@ function CustomRow({
             )}
           </label>
         )}
-        <div className="planner-times">
-          <TimeSelect
-            value={draft.on}
-            onChange={on => onChange({ ...draft, on })}
-            label="On"
+        <div className="planner-hours">
+          <span className="planner-field-tag">On for</span>
+          <Stepper
+            value={draft.hours}
+            max={MAX_HOURS}
+            onChange={hours => onChange({ ...draft, hours })}
+            label={`hours per day for ${draft.name || "custom appliance"}`}
           />
-          <TimeSelect
-            value={draft.off}
-            onChange={off => onChange({ ...draft, off })}
-            label="Off"
-          />
-          <span className="planner-hours-badge">
-            {hrs === 24 ? "24h" : `${hrs}h/day`}
-          </span>
+          <span className="planner-hours-unit">hrs/day</span>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ---------- usage pattern ---------- */
+
+function UsagePicker({
+  value,
+  onChange,
+}: {
+  value: UsagePattern;
+  onChange: (u: UsagePattern) => void;
+}) {
+  return (
+    <div className="planner-usage">
+      <p className="planner-usage-label">When do you use power most?</p>
+      <div
+        className="planner-usage-chips"
+        role="group"
+        aria-label="When do you use power most?"
+      >
+        {USAGE_PATTERNS.map(u => (
+          <button
+            key={u.id}
+            type="button"
+            className={
+              value === u.id
+                ? "planner-usage-chip active"
+                : "planner-usage-chip"
+            }
+            onClick={() => {
+              buzz(10);
+              onChange(u.id);
+            }}
+            aria-pressed={value === u.id}
+          >
+            {u.label}
+          </button>
+        ))}
+      </div>
+      <p className="planner-usage-hint">
+        This sets your battery size — most homes use power {USAGE_LABEL.night}.
+      </p>
     </div>
   );
 }
@@ -434,16 +444,18 @@ function CustomRow({
 function SharePlan({
   load,
   customs,
+  usage,
   period,
   fuelAmount,
 }: {
   load: LoadState;
   customs: CustomAppliance[];
+  usage: UsagePattern;
   period: FuelPeriod;
   fuelAmount: string;
 }) {
   const [copied, setCopied] = useState(false);
-  const code = encodePlan(load, customs, period, fuelAmount);
+  const code = encodePlan(load, customs, usage, period, fuelAmount);
   const url = planShareUrl(code);
   const text = "I planned my solar with G-Tech Consult — see the size I need:";
 
@@ -526,8 +538,9 @@ function readSharedPlan(shareable: boolean): PlanSnapshot | null {
 
 /**
  * "Plan your solar" — step 1 sizes the system from the customer's
- * appliances (with on/off timing and custom entries), step 2 compares
- * the recommended package against generator fuel spending.
+ * appliances (how many, which type, how long each runs per day, plus
+ * when power is used most), step 2 compares the recommended package
+ * against generator fuel spending.
  *
  * Pass `shareable` on the dedicated /solar-planner page: it hydrates
  * from ?plan= links and shows share buttons.
@@ -537,13 +550,15 @@ export function SolarPlanner({ shareable = false }: { shareable?: boolean }) {
   const [load, setLoad] = useState<LoadState>(
     () => shared?.load ?? defaultLoadState(),
   );
+  const [usage, setUsage] = useState<UsagePattern>(
+    () => shared?.usage ?? DEFAULT_USAGE,
+  );
   const [drafts, setDrafts] = useState<CustomDraft[]>(() =>
     (shared?.customs ?? []).map(c => ({
       id: c.id,
       name: c.name === "Custom appliance" ? "" : c.name,
       qty: c.qty,
-      on: c.on,
-      off: c.off,
+      hours: c.hours,
       variantIdx: 0,
       manualWatts: String(c.watts),
       manual: true,
@@ -565,14 +580,16 @@ export function SolarPlanner({ shareable = false }: { shareable?: boolean }) {
           variantLabel: r.label,
           watts: r.watts,
           qty: d.qty,
-          on: d.on,
-          off: d.off,
+          hours: d.hours,
         };
       }),
     [drafts],
   );
 
-  const sizing = useMemo(() => computeSizing(load, customs), [load, customs]);
+  const sizing = useMemo(
+    () => computeSizing(load, customs, usage),
+    [load, customs, usage],
+  );
   const pkg = pkgOverride ? packageBySlug(pkgOverride) : sizing.pkg;
 
   const fuelNumber = Number(fuelAmount) || 0;
@@ -593,8 +610,7 @@ export function SolarPlanner({ shareable = false }: { shareable?: boolean }) {
         id: `custom-${idRef.current}`,
         name: "",
         qty: 1,
-        on: 9,
-        off: 17,
+        hours: 8,
         variantIdx: 0,
         manualWatts: "",
         manual: false,
@@ -608,6 +624,7 @@ export function SolarPlanner({ shareable = false }: { shareable?: boolean }) {
     const text = buildPlannerMessage(
       load,
       customs,
+      usage,
       sizing,
       pkg,
       period,
@@ -633,6 +650,7 @@ export function SolarPlanner({ shareable = false }: { shareable?: boolean }) {
       ? buildPlannerWhatsAppLink(
           load,
           customs,
+          usage,
           sizing,
           pkg,
           period,
@@ -649,10 +667,10 @@ export function SolarPlanner({ shareable = false }: { shareable?: boolean }) {
             <p className="page-eyebrow">Solar planner</p>
             <h2 id="planner-heading">Plan your solar</h2>
             <p className="gallery-sub">
-              Tell us what you want to power and when you use it — pick the
-              type, set on and off times, even add your own appliances. We will
-              size the system, match it to a real G-Tech package, and show you
-              what it saves you.
+              Tell us what you want to power — choose each appliance, how many
+              you have, and how long it runs each day. We will size the
+              system, match it to a real G-Tech package, and show you what it
+              saves you.
             </p>
             {!shareable && (
               <p className="planner-open-full">
@@ -705,6 +723,8 @@ export function SolarPlanner({ shareable = false }: { shareable?: boolean }) {
                 <Plus size={15} /> Add your own appliance
               </button>
             )}
+
+            <UsagePicker value={usage} onChange={setUsage} />
 
             {sizing.hasLoad ? (
               <div className="planner-result">
@@ -788,7 +808,7 @@ export function SolarPlanner({ shareable = false }: { shareable?: boolean }) {
             ) : (
               <p className="planner-hint">
                 Tap + on the appliances you want your solar to power, then set
-                when each one runs.
+                how long each one runs per day.
               </p>
             )}
           </div>
@@ -996,6 +1016,7 @@ export function SolarPlanner({ shareable = false }: { shareable?: boolean }) {
               <SharePlan
                 load={load}
                 customs={customs}
+                usage={usage}
                 period={period}
                 fuelAmount={fuelAmount}
               />
