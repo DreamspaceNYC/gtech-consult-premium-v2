@@ -3,6 +3,8 @@ import { MessageCircle, X, Send, Mic, Volume2, VolumeX } from "lucide-react";
 import "./chat-widget.css";
 
 const API_URL = "https://chat.gtechconsult.ng/api/chat";
+const API_TRANSCRIBE_URL = "https://chat.gtechconsult.ng/api/transcribe";
+const MAX_RECORD_SECS = 60;
 const HISTORY_KEY = "gtc-chat-history";
 const SESSION_KEY = "gtc-chat-session";
 const MAX_HISTORY = 30;
@@ -84,6 +86,22 @@ function loadHistory(): ChatMessage[] {
   }
 }
 
+/** Pick a recording mime type the browser can handle (iOS Safari -> audio/mp4). */
+function pickRecorderMime(): string | undefined {
+  if (typeof MediaRecorder === "undefined" || typeof MediaRecorder.isTypeSupported !== "function") {
+    return undefined;
+  }
+  const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"];
+  for (const t of candidates) {
+    try {
+      if (MediaRecorder.isTypeSupported(t)) return t;
+    } catch {
+      /* ignore */
+    }
+  }
+  return undefined;
+}
+
 /** Render plain-text paragraphs, turning bare URLs into links. */
 const URL_SPLIT_RE = /(https?:\/\/[^\s)]+)/g;
 const URL_TEST_RE = /^https?:\/\/[^\s)]+$/;
@@ -118,14 +136,14 @@ export default function ChatWidget() {
   const [quickReplies, setQuickReplies] = useState<string[]>(FALLBACK_CHIPS);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
-  const [listening, setListening] = useState(false);
+  const [recording, setRecording] = useState(false);
   const [speechOn, setSpeechOn] = useState(false);
   const [micSupported, setMicSupported] = useState(false);
 
   const sessionIdRef = useRef<string>("");
   const messagesRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const recRef = useRef<{ stop: () => void } | null>(null);
+  const recRef = useRef<{ recorder: MediaRecorder; stopTimer: number; stopped: boolean } | null>(null);
   const sendingRef = useRef(false);
   const hasWelcomedRef = useRef(false);
 
@@ -134,11 +152,15 @@ export default function ChatWidget() {
     sessionIdRef.current = getSessionId();
   }, []);
 
-  // mic support detection (client only)
+  // mic support detection (client only) — recording works on iOS Safari, Android Chrome, desktop
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const w = window as unknown as Record<string, unknown>;
-    setMicSupported(Boolean(w.SpeechRecognition || w.webkitSpeechRecognition));
+    const nav = window.navigator as Navigator & { mediaDevices?: MediaDevices };
+    setMicSupported(
+      typeof MediaRecorder !== "undefined" &&
+        !!nav.mediaDevices &&
+        typeof nav.mediaDevices.getUserMedia === "function"
+    );
   }, []);
 
   // persist history
@@ -175,22 +197,36 @@ export default function ChatWidget() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open ]);
 
-  // stop speech when the panel closes
+  // stop an in-progress voice recording
+  const stopActiveRecording = useCallback(() => {
+    const a = recRef.current;
+    if (!a || a.stopped) return;
+    a.stopped = true;
+    window.clearTimeout(a.stopTimer);
+    try {
+      a.recorder.stop();
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  // stop speech + recording when the panel closes
   useEffect(() => {
     if (!open && typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
     }
-  }, [open ]);
+    if (!open) stopActiveRecording();
+  }, [open, stopActiveRecording]);
 
-  // stop speech + recognition on unmount
+  // stop speech + recording on unmount
   useEffect(() => {
     return () => {
       if (typeof window !== "undefined" && "speechSynthesis" in window) {
         window.speechSynthesis.cancel();
       }
-      recRef.current?.stop();
+      stopActiveRecording();
     };
-  }, []);
+  }, [stopActiveRecording]);
 
   const speak = useCallback((text: string) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
@@ -320,39 +356,122 @@ export default function ChatWidget() {
     }
   }, [appendMessages, messages.length]);
 
+  const uploadVoiceNote = useCallback(
+    async (chunks: Blob[], mimeType: string) => {
+      if (!chunks.length) {
+        appendMessages([
+          { role: "assistant", content: "I didn't catch any audio — please try again or type your message." },
+        ]);
+        return;
+      }
+      setTyping(true);
+      try {
+        const blob = new Blob(chunks, { type: mimeType });
+        const res = await fetch(API_TRANSCRIBE_URL, {
+          method: "POST",
+          headers: { "Content-Type": mimeType },
+          body: blob,
+        });
+        const data = await res.json().catch(() => null);
+        const text = data && typeof data.text === "string" ? data.text.trim() : "";
+        if (text) {
+          sendMessage(text);
+        } else {
+          appendMessages([
+            {
+              role: "assistant",
+              content:
+                (data && typeof data.reply === "string" && data.reply) ||
+                "Sorry, I couldn't understand that voice note — please try again or type your message.",
+            },
+          ]);
+        }
+      } catch {
+        appendMessages([
+          {
+            role: "assistant",
+            content: "Sorry, I couldn't process that voice note — please try again or type your message.",
+          },
+        ]);
+      } finally {
+        setTyping(false);
+      }
+    },
+    [appendMessages, sendMessage]
+  );
+
   const toggleMic = useCallback(() => {
     if (typeof window === "undefined") return;
-    if (listening) {
-      try {
-        recRef.current?.stop();
-      } catch {
-        /* ignore */
-      }
-      setListening(false);
+    // second tap stops the recording and sends it off for transcription
+    if (recRef.current) {
+      stopActiveRecording();
       return;
     }
-    const w = window as unknown as Record<string, any>;
-    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
-    if (!SR) return;
-    try {
-      const rec = new SR();
-      rec.lang = "en-NG";
-      rec.interimResults = false;
-      rec.maxAlternatives = 1;
-      recRef.current = rec;
-      rec.onresult = (e: any) => {
-        const transcript: string = e?.results?.[0]?.[0]?.transcript ?? "";
-        setListening(false);
-        if (transcript.trim()) sendMessage(transcript.trim());
-      };
-      rec.onerror = () => setListening(false);
-      rec.onend = () => setListening(false);
-      rec.start();
-      setListening(true);
-    } catch {
-      setListening(false);
+    const nav = window.navigator as Navigator & { mediaDevices?: MediaDevices };
+    if (typeof MediaRecorder === "undefined" || !nav.mediaDevices?.getUserMedia) {
+      appendMessages([
+        { role: "assistant", content: "Voice notes aren't supported in this browser — please type your message instead." },
+      ]);
+      return;
     }
-  }, [listening, sendMessage]);
+    setRecording(true);
+    nav.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        const chosenMime = pickRecorderMime();
+        let recorder: MediaRecorder;
+        try {
+          recorder = chosenMime ? new MediaRecorder(stream, { mimeType: chosenMime }) : new MediaRecorder(stream);
+        } catch {
+          stream.getTracks().forEach((t) => t.stop());
+          setRecording(false);
+          appendMessages([
+            { role: "assistant", content: "Couldn't start recording — please try again or type your message." },
+          ]);
+          return;
+        }
+        const effectiveMime = recorder.mimeType || chosenMime || "audio/webm";
+        const chunks: Blob[] = [];
+        let settled = false;
+        const finish = (ok: boolean) => {
+          if (settled) return;
+          settled = true;
+          recRef.current = null;
+          setRecording(false);
+          stream.getTracks().forEach((t) => t.stop());
+          if (ok) {
+            void uploadVoiceNote(chunks, effectiveMime);
+          } else {
+            appendMessages([
+              { role: "assistant", content: "Recording failed — please try again or type your message." },
+            ]);
+          }
+        };
+        recorder.ondataavailable = (e: BlobEvent) => {
+          if (e.data && e.data.size > 0) chunks.push(e.data);
+        };
+        recorder.onstop = () => finish(true);
+        recorder.onerror = () => finish(false);
+        const stopTimer = window.setTimeout(() => stopActiveRecording(), MAX_RECORD_SECS * 1000);
+        recRef.current = { recorder, stopTimer, stopped: false };
+        try {
+          recorder.start(250);
+        } catch {
+          window.clearTimeout(stopTimer);
+          finish(false);
+        }
+      })
+      .catch(() => {
+        setRecording(false);
+        appendMessages([
+          {
+            role: "assistant",
+            content:
+              "I can't reach your microphone. Please allow microphone access in your browser settings and try again — or just type your message.",
+          },
+        ]);
+      });
+  }, [appendMessages, stopActiveRecording, uploadVoiceNote]);
 
   return (
     <>
@@ -482,10 +601,10 @@ export default function ChatWidget() {
             {micSupported && (
               <button
                 type="button"
-                className={`gtc-chat-icon-btn gtc-chat-mic ${listening ? "gtc-chat-mic-active" : ""}`}
+                className={`gtc-chat-icon-btn gtc-chat-mic ${recording ? "gtc-chat-mic-active" : ""}`}
                 onClick={toggleMic}
-                aria-label={listening ? "Stop listening" : "Speak your message"}
-                aria-pressed={listening}
+                aria-label={recording ? "Stop recording and send" : "Record a voice note"}
+                aria-pressed={recording}
               >
                 <Mic size={18} aria-hidden="true" />
               </button>
@@ -496,7 +615,7 @@ export default function ChatWidget() {
               className="gtc-chat-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={listening ? "Listening…" : "Type your message…"}
+              placeholder={recording ? "Recording… tap mic to stop" : "Type your message…"}
               aria-label="Type your message"
               autoComplete="off"
             />
