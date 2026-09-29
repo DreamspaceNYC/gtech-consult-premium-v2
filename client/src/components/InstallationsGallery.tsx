@@ -1,21 +1,46 @@
-import { useCallback, useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Camera, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { GALLERY_IMAGES } from "@/content/gallery";
 
+type GalleryCategory = "Solar" | "CCTV" | "Smart Home";
+
+const FILTERS: ("All" | GalleryCategory)[] = ["All", "Solar", "CCTV", "Smart Home"];
+
 /**
- * "Recent installations" grid with a click-to-enlarge lightbox.
- * Images are real G-Tech Consult job-site photographs.
+ * Category map kept OUTSIDE content/gallery.ts (sacred — must not be edited).
+ * Every photo in GALLERY_IMAGES is a solar job site (Blessing Computers and
+ * Fagun, Ondo installs), so all 11 map to "Solar"; the CCTV / Smart Home
+ * chips render an honest empty state until job photos for those trades land.
+ */
+const IMAGE_CATEGORIES: GalleryCategory[] = GALLERY_IMAGES.map(() => "Solar");
+
+const reducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/**
+ * "Recent installations" grid with category filter chips and a
+ * click-to-enlarge lightbox. Images are real G-Tech Consult job-site photos.
  */
 export function InstallationsGallery() {
+  const [filter, setFilter] = useState<"All" | GalleryCategory>("All");
   const [lightbox, setLightbox] = useState<number | null>(null);
+
+  const filtered = useMemo(
+    () =>
+      GALLERY_IMAGES.map((image, i) => ({ image, category: IMAGE_CATEGORIES[i] }))
+        .filter(entry => filter === "All" || entry.category === filter),
+    [filter],
+  );
 
   const close = useCallback(() => setLightbox(null), []);
   const step = useCallback(
     (dir: 1 | -1) =>
       setLightbox(i =>
-        i === null ? i : (i + dir + GALLERY_IMAGES.length) % GALLERY_IMAGES.length,
+        i === null ? i : (i + dir + filtered.length) % filtered.length,
       ),
-    [],
+    [filtered.length],
   );
 
   useEffect(() => {
@@ -33,56 +58,103 @@ export function InstallationsGallery() {
     };
   }, [lightbox, close, step]);
 
+  // Reset the lightbox when the filter changes under it.
+  useEffect(() => setLightbox(null), [filter]);
+
   if (GALLERY_IMAGES.length === 0) return null;
 
+  const lightboxEntry = lightbox !== null ? filtered[lightbox] : null;
+
   return (
-    <section className="installations-gallery" aria-labelledby="gallery-heading">
+    <section
+      id="installations"
+      className="gtr-gallery gtr-section"
+      aria-labelledby="gallery-heading"
+    >
       <div className="container">
-        <div className="section-heading">
-          <p className="page-eyebrow">Our work</p>
-          <h2 id="gallery-heading">Recent installations</h2>
-          <p className="gallery-sub">
-            Real G-Tech Consult job sites — solar panels, inverters and battery
-            installations, photographed as they happened.
-          </p>
+        <div className="gtr-gallery-head">
+          <div className="gtr-heading" style={{ marginBottom: 0 }}>
+            <p className="gtr-kicker">Our work</p>
+            <h2 id="gallery-heading">Recent installations</h2>
+            <p>
+              Real G-Tech Consult job sites — solar panels, inverters and
+              battery installations, photographed as they happened.
+            </p>
+          </div>
+          <div
+            className="gtr-chips"
+            role="group"
+            aria-label="Filter installations by category"
+          >
+            {FILTERS.map(f => (
+              <button
+                key={f}
+                className={`gtr-chip${filter === f ? " is-active" : ""}`}
+                aria-pressed={filter === f}
+                onClick={() => setFilter(f)}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="gallery-grid">
-          {GALLERY_IMAGES.map((image, i) => (
-            <button
-              key={image.src}
-              className="gallery-item"
-              onClick={() => setLightbox(i)}
-              aria-label={`Enlarge photo: ${image.caption}`}
-            >
-              <img
-                src={image.src}
-                alt={image.alt}
-                loading="lazy"
-                decoding="async"
-              />
-              <span className="gallery-caption">{image.caption}</span>
-            </button>
-          ))}
-        </div>
+
+        <motion.div className="gtr-gallery-grid" layout={!reducedMotion()}>
+          <AnimatePresence mode="popLayout">
+            {filtered.map(({ image }) => (
+              <motion.button
+                layout={!reducedMotion()}
+                key={image.src}
+                className="gtr-gallery-item"
+                onClick={() =>
+                  setLightbox(filtered.findIndex(e => e.image.src === image.src))
+                }
+                aria-label={`Enlarge photo: ${image.caption}`}
+                initial={reducedMotion() ? false : { opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={reducedMotion() ? undefined : { opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.3 }}
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span className="gtr-gallery-caption">{image.caption}</span>
+              </motion.button>
+            ))}
+          </AnimatePresence>
+          {filtered.length === 0 && (
+            <div className="gtr-gallery-empty">
+              <Camera size={30} aria-hidden="true" />
+              <p>No {filter} installation photos yet.</p>
+              <span>
+                New job-site photos are added after each completed install —
+                browse our solar installs for now.
+              </span>
+            </div>
+          )}
+        </motion.div>
       </div>
 
-      {lightbox !== null && (
+      {lightboxEntry && (
         <div
-          className="lightbox"
+          className="gtr-lightbox"
           role="dialog"
           aria-modal="true"
-          aria-label={`Photo ${lightbox + 1} of ${GALLERY_IMAGES.length}`}
+          aria-label={`Photo ${lightbox! + 1} of ${filtered.length}`}
           onClick={close}
         >
           <button
-            className="lightbox-close"
+            className="gtr-lightbox__close"
             onClick={close}
             aria-label="Close photo viewer"
           >
             <X size={22} />
           </button>
           <button
-            className="lightbox-prev"
+            className="gtr-lightbox__prev"
             onClick={e => {
               e.stopPropagation();
               step(-1);
@@ -92,17 +164,14 @@ export function InstallationsGallery() {
             <ChevronLeft size={28} />
           </button>
           <figure
-            className="lightbox-figure"
+            className="gtr-lightbox-figure"
             onClick={e => e.stopPropagation()}
           >
-            <img
-              src={GALLERY_IMAGES[lightbox].src}
-              alt={GALLERY_IMAGES[lightbox].alt}
-            />
-            <figcaption>{GALLERY_IMAGES[lightbox].caption}</figcaption>
+            <img src={lightboxEntry.image.src} alt={lightboxEntry.image.alt} />
+            <figcaption>{lightboxEntry.image.caption}</figcaption>
           </figure>
           <button
-            className="lightbox-next"
+            className="gtr-lightbox__next"
             onClick={e => {
               e.stopPropagation();
               step(1);

@@ -1,5 +1,6 @@
 import { MessageCircle } from "lucide-react";
 import { BUSINESS, ASSESSMENT_URL } from "@/content/business";
+import { GridPattern } from "@/components/magicui";
 
 type PageHeroProps = {
   eyebrow: string;
@@ -10,9 +11,12 @@ type PageHeroProps = {
 export function PageHero({ eyebrow, title, description }: PageHeroProps) {
   return (
     <section className="page-hero">
+      <div className="page-hero-pattern" aria-hidden="true">
+        <GridPattern width={44} height={44} />
+      </div>
       <div className="container page-hero-inner">
         <p className="page-eyebrow">{eyebrow}</p>
-        <h1>{title}</h1>
+        <h1 className="text-balance">{title}</h1>
         <p>{description}</p>
         <div className="page-hero-actions">
           <a className="store-button green" href={ASSESSMENT_URL}>

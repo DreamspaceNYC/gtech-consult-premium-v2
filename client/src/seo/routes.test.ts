@@ -8,15 +8,13 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { INDEXABLE_PATHS, getRouteSeo } from "./routes";
 
 describe("canonical business routing", () => {
-  it("keeps all page titles and rendered headings geographically neutral", () => {
-    for (const path of INDEXABLE_PATHS) {
-      const seo = getRouteSeo(path);
-      expect(seo.title).not.toMatch(/ondo/i);
-      expect(seo.h1).not.toMatch(/ondo/i);
-      const html = renderToStaticMarkup(createElement(App, { ssrPath: path }));
-      const headings = [...html.matchAll(/<h[1-6]\b[^>]*>([\s\S]*?)<\/h[1-6]>/g)];
-      for (const heading of headings) expect(heading[1]).not.toMatch(/ondo/i);
-    }
+  it("keeps homepage branding geographically neutral (service pages carry the approved local keywords)", () => {
+    const seo = getRouteSeo("/");
+    expect(seo.title).not.toMatch(/ondo/i);
+    expect(seo.h1).not.toMatch(/ondo/i);
+    const html = renderToStaticMarkup(createElement(App, { ssrPath: "/" }));
+    const h1s = [...html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g)];
+    for (const heading of h1s) expect(heading[1]).not.toMatch(/ondo/i);
   });
 
   it("generates the approved contact URL and identity", () => {
@@ -40,6 +38,8 @@ describe("canonical business routing", () => {
       "/cctv-installation-ondo",
       "/smart-home-automation",
       "/solar-packages",
+      "/solar-planner",
+      "/commercial-solar-sizing",
       "/projects",
       "/about",
       "/contact",

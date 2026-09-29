@@ -1,41 +1,38 @@
-import { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { HERO_SLIDES } from "@/content/gallery";
 
-const ROTATE_MS = 7000;
-
 /**
- * Full-bleed background slideshow for the homepage hero.
- * Decorative only (aria-hidden): the hero copy carries the message.
- * Rotation pauses for users who prefer reduced motion.
+ * Repurposed from the old full-bleed hero slideshow: the 3 real G-Tech
+ * install photos (HERO_SLIDES in gallery.ts) now render as an "Our recent
+ * work" strip directly beneath the hero. The photos stay visible — nothing
+ * was dropped.
  */
 export function HeroSlideshow() {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    if (HERO_SLIDES.length < 2) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = window.setInterval(
-      () => setIndex(i => (i + 1) % HERO_SLIDES.length),
-      ROTATE_MS,
-    );
-    return () => window.clearInterval(id);
-  }, []);
-
   if (HERO_SLIDES.length === 0) return null;
 
   return (
-    <div className="hero-slideshow" aria-hidden="true">
-      {HERO_SLIDES.map((slide, i) => (
-        <img
-          key={slide.src}
-          src={slide.src}
-          alt=""
-          className={i === index ? "hero-slide active" : "hero-slide"}
-          loading={i === 0 ? "eager" : "lazy"}
-          decoding="async"
-        />
-      ))}
-      <div className="hero-slideshow-shade" />
+    <div className="gtr-workstrip">
+      <div className="container">
+        <div className="gtr-workstrip__head">
+          <h2>Our recent work</h2>
+          <a href="#installations">
+            See all installations <ArrowRight size={14} aria-hidden="true" />
+          </a>
+        </div>
+        <div className="gtr-workstrip__grid">
+          {HERO_SLIDES.map((slide, i) => (
+            <figure className="gtr-workstrip__card" key={slide.src}>
+              <img
+                src={slide.src}
+                alt={slide.alt}
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
+              <figcaption>{slide.alt}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

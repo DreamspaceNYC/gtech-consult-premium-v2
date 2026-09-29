@@ -1,12 +1,17 @@
 import { useMemo, useState } from "react";
 import {
   ArrowLeft,
+  BatteryCharging,
+  Cctv,
+  Check,
   ChevronLeft,
   ChevronRight,
-  Heart,
+  HousePlus,
   MessageCircle,
   ShoppingCart,
   SlidersHorizontal,
+  Sun,
+  Wrench,
   X,
 } from "lucide-react";
 import {
@@ -21,53 +26,32 @@ import { SeoHead } from "@/seo/SeoHead";
 import { HeroSlideshow } from "@/components/HeroSlideshow";
 import { InstallationsGallery } from "@/components/InstallationsGallery";
 import { SolarPlanner } from "@/components/SolarPlanner";
+// Interactive 3D product hero, built by a sibling builder (SSR-safe, lazy).
+import { Hero3DSection } from "@/components/Hero3DSection";
+// Shop components, built by a sibling builder.
+import { PackageCard } from "@/components/packages/PackageCard";
+import { PackageFilters } from "@/components/packages/PackageFilters";
+// Copied, keyless component sources (Magic UI + React Bits).
+import { Marquee } from "@/components/magicui/marquee";
+import { ShimmerButton } from "@/components/magicui";
+import { BentoGrid, BentoCard } from "@/components/magicui/bento-grid";
+import { GridPattern } from "@/components/magicui/grid-pattern";
+import { BlurText } from "@/components/reactbits/blur-text";
+import { AnimatedList } from "@/components/reactbits/animated-list";
+import "../styles/home-redesign.css";
 
 const WHATSAPP = "https://wa.me/2348167498489";
 const categories = ["All", "Solar Installation", "CCTV", "Smart Homes"];
 const formatNaira = (amount: number) => `₦${amount.toLocaleString("en-NG")}`;
 
-function ProductCard({
-  item,
-  onAdd,
-  onView,
-}: {
-  item: Package;
-  onAdd: (item: Package) => void;
-  onView: (item: Package) => void;
-}) {
-  return (
-    <article className="product-card">
-      <button
-        className="product-image-wrap"
-        onClick={() => onView(item)}
-        aria-label={`View details for ${item.title}`}
-      >
-        <img src={item.image} alt={item.title} className="product-image" loading="lazy" decoding="async" />
-        {item.badge && <span className="product-badge">{item.badge}</span>}
-        <span className="wish-button">
-          <Heart size={16} />
-        </span>
-      </button>
-      <div className="product-body">
-        <p className="product-category">{item.category}</p>
-        <h3>{item.title}</h3>
-        <div className="product-rating">
-          <span>G-Tech package</span>
-        </div>
-        <div className="product-price">
-          <strong>{formatNaira(item.price)}</strong>
-        </div>
-        <div className="product-card-actions">
-          <button className="add-cart" onClick={() => onAdd(item)}>
-            Add to Cart <ShoppingCart size={15} />
-          </button>
-          <button className="details-button" onClick={() => onView(item)}>
-            View details
-          </button>
-        </div>
-      </div>
-    </article>
-  );
+const CATEGORY_ICONS = [Sun, Cctv, HousePlus];
+
+function serviceIcon(path: string) {
+  if (path.includes("cctv")) return Cctv;
+  if (path.includes("smart-home")) return HousePlus;
+  if (path.includes("inverter")) return BatteryCharging;
+  if (path.includes("solar")) return Sun;
+  return Wrench;
 }
 
 function DetailPage({
@@ -80,32 +64,29 @@ function DetailPage({
   onAdd: (item: Package) => void;
 }) {
   return (
-    <div className="detail-page">
+    <div className="gtr-detail">
       <div className="container">
-        <button className="back-link" onClick={onBack}>
+        <button className="gtr-back-link" onClick={onBack}>
           <ArrowLeft size={16} /> Back to packages
         </button>
-        <div className="detail-hero">
-          <div className="detail-image">
+        <div className="gtr-detail-hero">
+          <div className="gtr-detail-image">
             <img src={item.image} alt={item.title} loading="lazy" decoding="async" />
           </div>
-          <div className="detail-intro">
-            <p className="store-kicker">G-Tech Consult · Solar Installation</p>
+          <div className="gtr-detail-intro">
+            <p className="gtr-kicker">G-Tech Consult · Solar Installation</p>
             <h1>{item.title}</h1>
-            <p className="detail-description">{item.description}</p>
-            <div className="detail-price">{formatNaira(item.price)}</div>
-            <p className="detail-price-note">
+            <p className="gtr-detail-desc">{item.description}</p>
+            <div className="gtr-detail-price">{formatNaira(item.price)}</div>
+            <p className="gtr-detail-price-note">
               Complete package price including listed installation items.
             </p>
-            <div className="detail-actions">
-              <button
-                className="store-button green"
-                onClick={() => onAdd(item)}
-              >
+            <div className="gtr-detail-actions">
+              <button className="gtr-btn gtr-btn--green" onClick={() => onAdd(item)}>
                 Add to cart <ShoppingCart size={16} />
               </button>
               <a
-                className="store-button outline"
+                className="gtr-btn gtr-btn--outline"
                 href={`${WHATSAPP}?text=${encodeURIComponent(`Hello G-Tech Consult, I am interested in the ${item.title} at ${formatNaira(item.price)}. Please help me arrange a technical assessment.`)}`}
               >
                 <MessageCircle size={16} /> Request on WhatsApp
@@ -113,31 +94,34 @@ function DetailPage({
             </div>
           </div>
         </div>
-        <div className="detail-grid">
+        <div className="gtr-detail-grid">
           <div>
-            <section className="detail-section">
-              <p className="store-kicker">Designed for</p>
+            <section className="gtr-detail-section">
+              <p className="gtr-kicker">Designed for</p>
               <h2>What it can power</h2>
-              <ul className="power-list">
+              <ul className="gtr-power-list">
                 {item.powers.map(power => (
                   <li key={power}>
-                    ✓ <span>{power}</span>
+                    <span className="gtr-check" aria-hidden="true">
+                      <Check size={13} strokeWidth={3} />
+                    </span>
+                    <span>{power}</span>
                   </li>
                 ))}
               </ul>
               {item.notes?.map(note => (
-                <div className="detail-note" key={note}>
+                <div className="gtr-detail-note" key={note}>
                   <strong>Important usage note</strong>
                   <p>{note}</p>
                 </div>
               ))}
             </section>
-            <section className="detail-section">
-              <p className="store-kicker">Included system</p>
+            <section className="gtr-detail-section">
+              <p className="gtr-kicker">Included system</p>
               <h2>Equipment specification</h2>
-              <div className="spec-table">
+              <div className="gtr-spec-table">
                 {item.items.map(entry => (
-                  <div className="spec-row" key={entry.name}>
+                  <div className="gtr-spec-row" key={entry.name}>
                     <strong>{entry.name}</strong>
                     <span>{entry.spec}</span>
                     <b>{entry.qty}</b>
@@ -146,15 +130,20 @@ function DetailPage({
               </div>
             </section>
           </div>
-          <aside className="inclusions-card">
-            <p className="store-kicker">Package inclusions</p>
+          <aside className="gtr-inclusions">
+            <p className="gtr-kicker">Package inclusions</p>
             <h2>Ready for installation</h2>
             <ul>
               {item.inclusions.map(entry => (
-                <li key={entry}>✓ {entry}</li>
+                <li key={entry}>
+                  <span className="gtr-check" aria-hidden="true">
+                    <Check size={13} strokeWidth={3} />
+                  </span>
+                  {entry}
+                </li>
               ))}
             </ul>
-            <div className="assessment-box">
+            <div className="gtr-assessment-box">
               <strong>Need help choosing?</strong>
               <span>
                 Final sizing is confirmed through a technical site assessment.
@@ -167,7 +156,7 @@ function DetailPage({
             </div>
           </aside>
         </div>
-        <div className="detail-disclaimer">
+        <div className="gtr-disclaimer">
           System performance depends on actual appliance ratings, usage
           patterns, weather, battery condition and installation environment.
           G-Tech Consult will confirm the final recommendation during
@@ -184,6 +173,7 @@ export default function Home() {
   const [cart, setCart] = useState<Package[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [toast, setToast] = useState("");
+
   const filtered = useMemo(
     () =>
       activeCategory === "All"
@@ -191,41 +181,58 @@ export default function Home() {
         : packages.filter(item => item.category === activeCategory),
     [activeCategory]
   );
+
+  const counts = useMemo(() => {
+    const result: Record<string, number> = { All: packages.length };
+    for (const category of categories.slice(1)) {
+      result[category] = packages.filter(
+        item => item.category === category,
+      ).length;
+    }
+    return result;
+  }, []);
+
   const addToCart = (item: Package) => {
     setCart(current => [...current, item]);
     setToast(`${item.shortTitle} added to cart`);
     window.setTimeout(() => setToast(""), 2400);
   };
+
   const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
+
+  const scrollToShop = (category: string) => {
+    setActiveCategory(category);
+    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <div className="storefront">
+    <div className="gtr-home">
       <SeoHead path="/" />
-      <div className="promo-bar">
-        <div className="promo-track">
-          <span>
-            Book a free technical site assessment for solar & security
+
+      {/* (1) promo bar — marquee */}
+      <div className="gtr-promo" role="note" aria-label="Current promotion">
+        <Marquee repeat={4}>
+          <span className="gtr-promo__item">
+            Book a free technical site assessment for solar &amp; security
             installations
+            <span className="gtr-promo__dot" aria-hidden="true" />
           </span>
-          <span>
-            Book a free technical site assessment for solar & security
-            installations
-          </span>
-          <span>
-            Book a free technical site assessment for solar & security
-            installations
-          </span>
-        </div>
+        </Marquee>
       </div>
+
+      {/* (2) site header */}
       <SiteHeader />
-      <div className="container cart-access">
+
+      <div className="container gtr-cart-access">
         <button
-          className="store-button outline"
+          className="gtr-btn gtr-btn--outline"
           onClick={() => setCartOpen(true)}
           aria-label={`Open cart (${cart.length} items)`}
         >
           <ShoppingCart size={17} /> Cart ({cart.length})
         </button>
       </div>
+
       {selected ? (
         <main id="main-content">
           <DetailPage
@@ -236,163 +243,242 @@ export default function Home() {
         </main>
       ) : (
         <main id="main-content">
-          <section id="top" className="store-hero store-hero--photos">
-            <HeroSlideshow />
-            <div className="container store-hero-inner">
-              <div className="hero-copy-store">
-                <p className="store-kicker">G-Tech Consult</p>
-                <h1>Reliable Power. Smarter Security. Better Living.</h1>
-                <p>
+          {/* (3) hero */}
+          <section id="top" className="gtr-hero">
+            <GridPattern
+              className="gtr-grid-pattern"
+              maxOpacity={0.12}
+              numSquares={40}
+            />
+            <div className="container gtr-hero-inner">
+              <div className="gtr-hero-copy">
+                <p className="gtr-kicker">G-Tech Consult</p>
+                <BlurText
+                  as="h1"
+                  text="Reliable Power. Smarter Security. Better Living."
+                  animateBy="words"
+                  delay={90}
+                  direction="top"
+                />
+                <p className="gtr-hero-lead">
                   Solar, inverter, battery, CCTV and smart-home solutions for
                   homes and businesses. Based in Ondo, with enquiries welcome
                   from Lagos and elsewhere in Nigeria. Service availability is
                   confirmed for your location.
                 </p>
-                <div className="store-hero-actions">
-                  <a href="#shop" className="store-button green">
+                <div className="gtr-hero-actions">
+                  <ShimmerButton
+                    background="linear-gradient(135deg, #20a653, #118541)"
+                    shimmerColor="#eafff2"
+                    shimmerDuration="3.5s"
+                    onClick={() =>
+                      document
+                        .getElementById("shop")
+                        ?.scrollIntoView({ behavior: "smooth" })
+                    }
+                  >
                     Shop solutions <ChevronRight size={17} />
-                  </a>
-                  <a href={ASSESSMENT_URL} className="store-button outline">
+                  </ShimmerButton>
+                  <a
+                    href={ASSESSMENT_URL}
+                    className="gtr-hero-cta gtr-hero-cta--ghost"
+                  >
                     Get a free assessment <MessageCircle size={16} />
                   </a>
                 </div>
-              </div>
-              <div className="hero-product-card">
-                <img
-                  src="/images/gtech-premium-comfort-packshot_3201fbb7.webp"
-                  alt="G-Tech Premium Comfort solar package"
-                />
-                <div>
-                  <span>Featured solution</span>
-                  <strong>Premium Comfort Package</strong>
-                  <b>{formatNaira(14321800)}</b>
-                  <button onClick={() => setSelected(packages[0])}>
+                <div className="gtr-featured">
+                  <img
+                    src="/images/gtech-premium-comfort-packshot_3201fbb7.webp"
+                    alt="G-Tech Premium Comfort solar package"
+                  />
+                  <div className="gtr-featured__body">
+                    <span className="gtr-featured__label">
+                      Featured solution
+                    </span>
+                    <strong>Premium Comfort Package</strong>
+                    <b>{formatNaira(14321800)}</b>
+                  </div>
+                  <button
+                    className="gtr-featured__link"
+                    onClick={() => setSelected(packages[0])}
+                  >
                     View product <ChevronRight size={15} />
                   </button>
                 </div>
               </div>
-            </div>
-          </section>
-          <section className="category-strip">
-            <div className="container category-strip-inner">
-              <div>
-                <p>Shop by category</p>
-                <strong>Find your solution</strong>
+              <div className="gtr-hero-visual">
+                <Hero3DSection />
               </div>
-              {categories.slice(1).map((category, index) => (
-                <button
-                  key={category}
-                  onClick={() => {
-                    setActiveCategory(category);
-                    document
-                      .getElementById("shop")
-                      ?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                >
-                  <span className={`category-icon category-${index}`} />
-                  {category}
-                  <ChevronRight size={15} />
-                </button>
-              ))}
+            </div>
+            <HeroSlideshow />
+          </section>
+
+          {/* (4) category strip */}
+          <section className="gtr-categories" aria-label="Shop by category">
+            <div className="container">
+              <AnimatedList
+                className="gtr-categories-inner"
+                stagger={0.08}
+                duration={0.45}
+              >
+                <div className="gtr-categories__intro">
+                  <p>Shop by category</p>
+                  <strong>Find your solution</strong>
+                </div>
+                {categories.slice(1).map((category, index) => {
+                  const Icon = CATEGORY_ICONS[index] ?? Sun;
+                  return (
+                    <button
+                      key={category}
+                      className="gtr-category-card"
+                      onClick={() => scrollToShop(category)}
+                    >
+                      <span className="gtr-category-icon">
+                        <Icon size={22} aria-hidden="true" />
+                      </span>
+                      {category}
+                      <ChevronRight size={15} aria-hidden="true" />
+                    </button>
+                  );
+                })}
+              </AnimatedList>
             </div>
           </section>
-          <section className="home-services">
+
+          {/* (5) services grid */}
+          <section className="gtr-section gtr-services" aria-label="Technical services">
             <div className="container">
-              <div className="section-heading">
-                <p className="page-eyebrow">Technical services</p>
+              <div className="gtr-heading">
+                <p className="gtr-kicker">Technical services</p>
                 <h2>Power, security and automation built around your needs</h2>
               </div>
-              <div className="service-link-grid">
-                {SERVICE_PAGES.map(service => (
-                  <a href={`${service.path}/`} key={service.path}>
-                    <h3>{service.h1}</h3>
-                    <p>{service.description}</p>
-                    <span>Explore service →</span>
-                  </a>
+              <BentoGrid>
+                {SERVICE_PAGES.map((service, i) => (
+                  <BentoCard
+                    key={service.path}
+                    name={service.h1}
+                    description={service.description}
+                    href={`${service.path}/`}
+                    cta="Explore service"
+                    Icon={serviceIcon(service.path)}
+                    background={
+                      <div
+                        aria-hidden="true"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          background:
+                            i % 2 === 0
+                              ? "radial-gradient(320px 180px at 80% 0%, rgba(32,166,83,0.22), transparent 70%), linear-gradient(180deg, #f4faf5, #ffffff)"
+                              : "radial-gradient(320px 180px at 20% 0%, rgba(242,169,0,0.20), transparent 70%), linear-gradient(180deg, #fbf8ef, #ffffff)",
+                        }}
+                      />
+                    }
+                  />
                 ))}
-              </div>
+              </BentoGrid>
             </div>
           </section>
-          <section id="shop" className="shop-section">
+
+          {/* (6) shop */}
+          <section id="shop" className="gtr-shop gtr-section" aria-label="Shop packages">
             <div className="container">
-              <div className="shop-heading">
+              <div className="gtr-shop-head">
                 <div>
-                  <p className="store-kicker">G-Tech marketplace</p>
+                  <p className="gtr-kicker">G-Tech marketplace</p>
                   <h2>
                     Shop our featured <span>solutions</span>
                   </h2>
                 </div>
-                <div className="shop-heading-right">
-                  <button className="filter-button">
-                    <SlidersHorizontal size={16} /> Filter
-                  </button>
-                  <select aria-label="Sort packages" defaultValue="featured">
+                <div className="gtr-shop-tools">
+                  <span className="gtr-filter-chip-btn">
+                    <SlidersHorizontal size={16} aria-hidden="true" /> Filter
+                  </span>
+                  <select className="gtr-sort" aria-label="Sort packages" defaultValue="featured">
                     <option value="featured">Sort by: Featured</option>
                     <option value="low">Price: Low to high</option>
                     <option value="high">Price: High to low</option>
                   </select>
                 </div>
               </div>
-              <div className="shop-meta">
-                <span>{filtered.length} packages</span>
+              <PackageFilters
+                filters={categories.map(id => ({ id, label: id }))}
+                activeId={activeCategory}
+                onChange={setActiveCategory}
+                counts={counts}
+              />
+              <div className="gtr-shop-meta">
+                <span>
+                  <strong>{filtered.length}</strong> packages
+                </span>
                 <span>Prices shown in NGN · Installation included</span>
               </div>
-              <div className="product-grid">
+              <AnimatedList
+                className="gtr-package-grid"
+                stagger={0.07}
+                duration={0.45}
+              >
                 {filtered.map(item => (
-                  <ProductCard
+                  <PackageCard
                     key={item.slug}
                     item={item}
                     onAdd={addToCart}
                     onView={setSelected}
                   />
                 ))}
-              </div>
-              <div className="pagination">
-                <button disabled>
+              </AnimatedList>
+              <div className="gtr-pagination" aria-label="Pagination">
+                <button disabled aria-label="Previous page">
                   <ChevronLeft size={17} />
                 </button>
-                <button className="selected">1</button>
+                <button className="is-active" aria-current="page">
+                  1
+                </button>
                 <button>2</button>
                 <button>3</button>
-                <span>...</span>
+                <span aria-hidden="true">...</span>
                 <button>7</button>
-                <button>
+                <button aria-label="Next page">
                   <ChevronRight size={17} />
                 </button>
               </div>
             </div>
           </section>
+
+          {/* (7) installations gallery */}
           <InstallationsGallery />
+
+          {/* (8) embedded solar planner */}
           <SolarPlanner />
-          <section className="assessment-banner">
-            <div className="container assessment-inner">
+
+          {/* (9) assessment banner */}
+          <section className="gtr-assessment" aria-label="Book a free assessment">
+            <div className="container gtr-assessment-inner">
               <div>
-                <p className="store-kicker">Not sure where to start?</p>
+                <p className="gtr-kicker">Not sure where to start?</p>
                 <h2>
-                  Book a free technical
-                  <br />
-                  <span>site assessment.</span>
+                  Book a free technical <span>site assessment.</span>
                 </h2>
               </div>
-              <a href={ASSESSMENT_URL} className="store-button dark">
+              <a href={ASSESSMENT_URL} className="gtr-assessment-cta">
                 Book on WhatsApp <MessageCircle size={17} />
               </a>
             </div>
           </section>
-          <section id="contact" className="contact-store">
-            <div className="container contact-grid">
+
+          {/* (10) contact / newsletter */}
+          <section id="contact" className="gtr-section gtr-contact" aria-label="Contact and newsletter">
+            <div className="container gtr-contact-grid">
               <div>
-                <p className="store-kicker">Stay in the loop</p>
+                <p className="gtr-kicker">Stay in the loop</p>
                 <h2>
-                  Get smart with
-                  <br />
-                  <span>your power.</span>
+                  Get smart with <span>your power.</span>
                 </h2>
-                <p className="contact-copy">
+                <p className="gtr-contact-copy">
                   Follow G-Tech Consult for new installations, practical energy
                   tips, offers and smart security updates.
                 </p>
-                <div className="social-row">
+                <div className="gtr-social-row">
                   <a href="https://www.instagram.com/gtechconsult/">
                     Instagram
                   </a>
@@ -400,9 +486,9 @@ export default function Home() {
                   <a href={ASSESSMENT_URL}>WhatsApp</a>
                 </div>
               </div>
-              <div className="subscribe-card">
-                <p>Sign up for discounts & updates</p>
-                <div>
+              <div className="gtr-subscribe">
+                <p>Sign up for discounts &amp; updates</p>
+                <div className="gtr-subscribe__row">
                   <input
                     placeholder="Your email address"
                     type="email"
@@ -419,26 +505,30 @@ export default function Home() {
           </section>
         </main>
       )}
+
+      {/* (11) footer */}
       <SiteFooter />
+
       {toast && (
-        <div className="cart-toast" role="status">
+        <div className="gtr-toast" role="status">
           <ShoppingCart size={16} /> {toast}
         </div>
       )}
+
       {cartOpen && (
-        <div
-          className="cart-drawer-backdrop"
-          onClick={() => setCartOpen(false)}
-        >
+        <div className="gtr-cart-backdrop" onClick={() => setCartOpen(false)}>
           <aside
-            className="cart-drawer"
+            className="gtr-cart-drawer"
             onClick={event => event.stopPropagation()}
+            role="dialog"
+            aria-label="Shopping cart"
           >
-            <div className="cart-drawer-head">
+            <div className="gtr-cart-head">
               <h2>
                 Your cart <span>({cart.length})</span>
               </h2>
               <button
+                className="gtr-icon-btn"
                 onClick={() => setCartOpen(false)}
                 aria-label="Close cart"
               >
@@ -446,17 +536,22 @@ export default function Home() {
               </button>
             </div>
             {cart.length === 0 ? (
-              <div className="empty-cart">
-                <ShoppingCart size={38} />
+              <div className="gtr-cart-empty">
+                <ShoppingCart size={38} aria-hidden="true" />
                 <p>Your cart is empty.</p>
                 <span>Add packages to start a quote.</span>
               </div>
             ) : (
               <>
-                <div className="cart-items">
+                <div className="gtr-cart-items">
                   {cart.map((item, index) => (
-                    <div key={`${item.slug}-${index}`}>
-                      <img src={item.image} alt="" loading="lazy" decoding="async" />
+                    <div className="gtr-cart-item" key={`${item.slug}-${index}`}>
+                      <img
+                        src={item.image}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                      />
                       <div>
                         <strong>{item.title}</strong>
                         <span>{formatNaira(item.price)}</span>
@@ -464,16 +559,18 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-                <div className="cart-total">
-                  <span>Estimated total</span>
-                  <strong>{formatNaira(cartTotal)}</strong>
+                <div className="gtr-cart-foot">
+                  <div className="gtr-cart-total">
+                    <span>Estimated total</span>
+                    <strong>{formatNaira(cartTotal)}</strong>
+                  </div>
+                  <a
+                    href={`${WHATSAPP}?text=${encodeURIComponent(`Hello G-Tech Consult, I would like to request a quote for: ${cart.map(item => item.title).join(", ")}.`)}`}
+                    className="gtr-quote-btn"
+                  >
+                    Request quote on WhatsApp <MessageCircle size={16} />
+                  </a>
                 </div>
-                <a
-                  href={`${WHATSAPP}?text=${encodeURIComponent(`Hello G-Tech Consult, I would like to request a quote for: ${cart.map(item => item.title).join(", ")}.`)}`}
-                  className="store-button green full"
-                >
-                  Request quote on WhatsApp <MessageCircle size={16} />
-                </a>
               </>
             )}
           </aside>
@@ -482,5 +579,3 @@ export default function Home() {
     </div>
   );
 }
-
-import React from "react";

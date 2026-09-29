@@ -1,5 +1,6 @@
 import { Menu, MessageCircle } from "lucide-react";
 import { BUSINESS } from "@/content/business";
+import { ShimmerButton } from "@/components/magicui";
 
 const primaryLinks = [
   { href: "/", label: "Home" },
@@ -46,10 +47,17 @@ export function SiteHeader() {
               </a>
             ))}
           </nav>
-          <a className="site-header-whatsapp" href={BUSINESS.whatsapp}>
+          <ShimmerButton
+            href={BUSINESS.whatsapp}
+            className="site-header-whatsapp"
+            background="linear-gradient(135deg, #27b45e 0%, #118541 100%)"
+            shimmerColor="rgba(255, 255, 255, 0.55)"
+            shimmerDuration="3s"
+            borderRadius="999px"
+          >
             <MessageCircle aria-hidden="true" size={16} />
             WhatsApp
-          </a>
+          </ShimmerButton>
         </div>
       </header>
     </>

@@ -37,10 +37,10 @@ describe("structured local business data", () => {
       buildPageSchemas("/solar-installation-ondo-city").map(
         schema => schema["@type"]
       )
-    ).toEqual(["LocalBusiness", "Service", "BreadcrumbList"]);
+    ).toEqual(["LocalBusiness", "Service", "FAQPage", "BreadcrumbList"]);
     expect(
       buildPageSchemas("/solar-packages").map(schema => schema["@type"])
-    ).toEqual(["LocalBusiness", "OfferCatalog", "BreadcrumbList"]);
+    ).toEqual(["LocalBusiness", "OfferCatalog", "FAQPage", "BreadcrumbList"]);
 
     const serialized = JSON.stringify([
       buildPageSchemas("/"),

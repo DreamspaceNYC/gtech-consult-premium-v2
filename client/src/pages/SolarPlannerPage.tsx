@@ -1,3 +1,5 @@
+import { Plus } from "lucide-react";
+import "../inner-pages.css";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { ContactCta } from "@/components/site/ContactCta";
 import { PageHero } from "@/components/site/PageHero";
@@ -5,6 +7,12 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SolarPlanner } from "@/components/SolarPlanner";
 import { SizingGuide } from "@/components/SizingGuide";
+import { GridPattern } from "@/components/magicui";
+import {
+  AnimatedList,
+  BlurText,
+  CountUp,
+} from "@/components/reactbits";
 import { PLANNER_FAQS } from "@/content/plannerFaq";
 import { SITE_PAGES } from "@/content/sitePages";
 import { SeoHead } from "@/seo/SeoHead";
@@ -23,11 +31,22 @@ export default function SolarPlannerPage() {
       <SiteHeader />
       <main id="main-content">
         <Breadcrumbs path={page.path} />
-        <PageHero
-          eyebrow="Free solar calculator"
-          title={page.h1}
-          description={page.description}
-        />
+        <div className="inner-hero-wrap">
+          <GridPattern
+            className="inner-hero-pattern"
+            squares={[
+              [10, 1],
+              [11, 1],
+              [10, 2],
+            ]}
+          />
+          <div className="inner-hero-glow" aria-hidden="true" />
+          <PageHero
+            eyebrow="Free solar calculator"
+            title={page.h1}
+            description={page.description}
+          />
+        </div>
         <SolarPlanner shareable />
         <SizingGuide />
         <section
@@ -35,23 +54,39 @@ export default function SolarPlannerPage() {
           aria-labelledby="planner-faq-heading"
         >
           <div className="container">
-            <div className="section-heading">
-              <p className="page-eyebrow">Common questions</p>
-              <h2 id="planner-faq-heading">Solar sizing questions, answered</h2>
-              <p>
+            <div className="gt-section-head">
+              <p className="gt-eyebrow">Common questions</p>
+              <BlurText
+                as="h2"
+                id="planner-faq-heading"
+                className="gt-h2"
+                text="Solar sizing questions, answered"
+              />
+              <p className="gt-sub">
                 The twenty questions customers ask us most — answered with
                 real numbers. Try the planner above to get answers for your
                 own home or business.
               </p>
+              <p className="gt-count-pill">
+                <CountUp end={PLANNER_FAQS.length} />
+                answered questions
+              </p>
             </div>
-            <div className="faq-list">
+            <AnimatedList className="gt-faq" stagger={0.03} y={12}>
               {PLANNER_FAQS.map(faq => (
                 <details key={faq.question}>
-                  <summary>{faq.question}</summary>
+                  <summary>
+                    <span>{faq.question}</span>
+                    <Plus
+                      size={15}
+                      aria-hidden="true"
+                      className="gt-faq-icon"
+                    />
+                  </summary>
                   <p>{faq.answer}</p>
                 </details>
               ))}
-            </div>
+            </AnimatedList>
           </div>
         </section>
         <ContactCta />

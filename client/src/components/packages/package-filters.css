@@ -1,0 +1,100 @@
+/* G-Tech price filter chips — accessible animated radiogroup.
+   Adapted from the 21st filter grid; re-skinned to G-Tech tokens. */
+
+.pkg-filters {
+  width: 100%;
+}
+
+.pkg-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.pkg-chip {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+  outline: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+.pkg-chip-thumb {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #20a653, #118541);
+  box-shadow: 0 8px 18px -8px rgba(17, 133, 65, 0.75);
+}
+
+.pkg-chip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(17, 23, 20, 0.14);
+  pointer-events: none;
+}
+
+.pkg-chip:focus-visible {
+  box-shadow: 0 0 0 3px rgba(32, 166, 83, 0.35);
+}
+
+.pkg-chip-labels {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  display: inline-grid;
+}
+
+.pkg-chip-text {
+  grid-column: 1;
+  grid-row: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.pkg-chip-off {
+  color: #3d4840;
+}
+
+.pkg-chip-on {
+  color: #fff;
+}
+
+.pkg-chip-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  background: rgba(17, 23, 20, 0.07);
+  color: #3d4840;
+}
+
+.pkg-chip-on .pkg-chip-count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pkg-chip-thumb {
+    transition: none;
+  }
+}
