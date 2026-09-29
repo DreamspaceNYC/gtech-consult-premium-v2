@@ -57,6 +57,7 @@ export const INDEXABLE_PATHS = [
   "/smart-home-automation",
   "/solar-packages",
   "/solar-planner",
+  "/commercial-solar-sizing",
   "/projects",
   "/about",
   "/contact",
