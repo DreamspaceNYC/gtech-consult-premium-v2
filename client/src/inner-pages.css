@@ -76,6 +76,35 @@
   background: transparent;
 }
 
+/* Light-hero readability: .page-hero was designed for a dark gradient
+   (white heading, light subtext, ghost-white outline CTA). Inside
+   .inner-hero-wrap the background is light, so those turn invisible.
+   Restore dark text and a proper light outline button here. No wording
+   changes — contrast only. Specificity beats index.css at any order. */
+.inner-hero-wrap .page-hero h1 {
+  color: var(--ink);
+}
+
+.inner-hero-wrap .page-hero h1 + p {
+  color: #5c6a61;
+}
+
+.inner-hero-wrap .page-hero .page-eyebrow {
+  color: var(--green-dark);
+}
+
+.inner-hero-wrap .page-hero .store-button.outline {
+  background: #ffffff;
+  border-color: #b8d8be;
+  color: var(--green-dark);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.inner-hero-wrap .page-hero .store-button.outline:hover {
+  background: var(--green-tint);
+}
+
 /* ---------- Section headings ---------- */
 
 .gt-section-head {
@@ -804,6 +833,14 @@
 @media (min-width: 760px) {
   .solar-planner .planner-appliances {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Mobile: reserve a right gutter for the fixed chat launcher so it
+   never covers the cards' steppers or time controls while scrolling. */
+@media (max-width: 760px) {
+  .solar-planner .planner-appliances {
+    padding-right: 72px;
   }
 }
 

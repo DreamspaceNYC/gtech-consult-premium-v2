@@ -1887,17 +1887,8 @@ a {
 }
 
 @media (max-width: 900px) {
-  .site-nav {
-    gap: 11px;
-  }
-  .site-nav a {
-    font-size: 9px;
-  }
-  .site-footer-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-@media (max-width: 720px) {
+  /* Collapse the desktop nav into the hamburger menu below 900px: at
+     tablet/phone widths the inline links get too small to tap. */
   .site-header-inner {
     min-height: 65px;
   }
@@ -1954,6 +1945,13 @@ a {
     padding: 11px 0;
     border-bottom: 1px solid var(--line);
   }
+  .site-footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 720px) {
+  /* Header/nav collapse lives in the 900px block above; nothing
+     header-specific needed here. */
   .site-footer-grid {
     grid-template-columns: 1fr;
   }
